@@ -97,7 +97,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
 
       <TouchableOpacity
   onPress={handleAddAssignment}
-  style={{ position: 'absolute', bottom: 10, right: 20, backgroundColor: 'blue', padding: 20 }}
+  style={{ position: 'absolute', bottom: 170, right: 30, backgroundColor: 'blue', padding: 20 }}
 >
   <Text style={{ color: 'white' }}>ADD</Text>
 </TouchableOpacity>
