@@ -95,7 +95,12 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
         </View>
       </ScrollView>
 
-      <FloatingButton onPress={handleAddAssignment} />
+      <TouchableOpacity
+  onPress={handleAddAssignment}
+  style={{ position: 'absolute', bottom: 10, right: 20, backgroundColor: 'blue', padding: 20 }}
+>
+  <Text style={{ color: 'white' }}>ADD</Text>
+</TouchableOpacity>
 
       {/* Add Assignment screen is a separate route; the FAB navigates there */}
     </SafeAreaView>
