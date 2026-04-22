@@ -1,29 +1,38 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   View,
   Text,
   StyleSheet,
   ScrollView,
-  TouchableOpacity,
-  Modal,
-  TextInput,
-  Platform,
+  RefreshControl,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Assignment, AssignmentType } from '../types';
-import { mockUser, mockAssignments } from '../data/mockData';
+import { Assignment } from '../types';
+import { mockUser } from '../data/mockData';
 import { AssignmentCard, UserCard, FloatingButton } from '../components';
 import { colors } from '../utils/colors';
-import { formatFullDate, getDayName, isSameDay } from '../utils/helpers';
+import { formatFullDate, getDayName } from '../utils/helpers';
+import { useAssignmentsStore } from '../store/AssignmentsStore';
 
 interface HomeScreenProps {
   navigation: any;
 }
 
 export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
-  const [assignments] = useState<Assignment[]>(mockAssignments);
+  const { assignments, loadAssignments, completeAssignment } = useAssignmentsStore();
+  const [refreshing, setRefreshing] = useState(false);
   const [user] = useState(mockUser);
-  // Removed modal -> navigation-based Add screen
+
+  useEffect(() => {
+    loadAssignments();
+  }, []);
+
+  const onRefresh = async () => {
+    setRefreshing(true);
+    await loadAssignments();
+    setRefreshing(false);
+  };
+
   const groupedAssignments = assignments.reduce((groups, assignment) => {
     const dateKey = assignment.deadline.toDateString();
     if (!groups[dateKey]) {
@@ -38,14 +47,16 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
   );
 
   const handleAddAssignment = () => {
-    // Try navigating to root navigator to access AddAssignment screen
-    const navAny: any = navigation;
-    const root = navAny.getParent?.();
-    if (root && typeof root.navigate === 'function') {
-      root.navigate('AddAssignment');
+    const rootNav = navigation.getParent();
+    if (rootNav) {
+      rootNav.navigate('AddAssignment');
     } else {
-      navigation.navigate('AddAssignment' as any);
+      navigation.navigate('AddAssignment');
     }
+  };
+
+  const handleCompleteAssignment = async (id: string) => {
+    await completeAssignment(id);
   };
 
   return (
@@ -54,6 +65,9 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
         style={styles.scrollView}
         contentContainerStyle={styles.content}
         showsVerticalScrollIndicator={false}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.primary} />
+        }
       >
         <View style={styles.header}>
           <Text style={styles.appTitle}>Assignment Tracker</Text>
@@ -85,7 +99,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
                     <AssignmentCard
                       key={assignment.id}
                       assignment={assignment}
-                      onPress={() => {}}
+                      onPress={() => handleCompleteAssignment(assignment.id)}
                     />
                   ))}
                 </View>
@@ -95,14 +109,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
         </View>
       </ScrollView>
 
-      <TouchableOpacity
-  onPress={handleAddAssignment}
-  style={{ position: 'absolute', bottom: 170, right: 30, backgroundColor: 'blue', padding: 20 }}
->
-  <Text style={{ color: 'white' }}>ADD</Text>
-</TouchableOpacity>
-
-      {/* Add Assignment screen is a separate route; the FAB navigates there */}
+      <FloatingButton onPress={handleAddAssignment} />
     </SafeAreaView>
   );
 };
@@ -172,96 +179,5 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: colors.textSecondary,
     textAlign: 'center',
-  },
-  modalOverlay: {
-    flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    justifyContent: 'flex-end',
-  },
-  modalContent: {
-    backgroundColor: colors.surface,
-    borderTopLeftRadius: 24,
-    borderTopRightRadius: 24,
-    padding: 24,
-    maxHeight: '90%',
-  },
-  modalHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 24,
-  },
-  modalTitle: {
-    fontSize: 20,
-    fontWeight: '600',
-    color: colors.text,
-  },
-  closeButton: {
-    fontSize: 20,
-    color: colors.textSecondary,
-    padding: 4,
-  },
-  form: {
-    gap: 16,
-  },
-  label: {
-    fontSize: 14,
-    fontWeight: '500',
-    color: colors.text,
-    marginBottom: 8,
-  },
-  input: {
-    backgroundColor: colors.background,
-    borderRadius: 12,
-    padding: 16,
-    fontSize: 16,
-    color: colors.text,
-    borderWidth: 1,
-    borderColor: colors.border,
-  },
-  typeButtons: {
-    flexDirection: 'row',
-    gap: 8,
-  },
-  typeButton: {
-    flex: 1,
-    paddingVertical: 12,
-    backgroundColor: colors.background,
-    borderRadius: 10,
-    alignItems: 'center',
-    borderWidth: 1,
-    borderColor: colors.border,
-  },
-  typeButtonText: {
-    fontSize: 13,
-    fontWeight: '500',
-    color: colors.text,
-  },
-  datePicker: {
-    backgroundColor: colors.background,
-    borderRadius: 12,
-    padding: 16,
-    borderWidth: 1,
-    borderColor: colors.border,
-  },
-  datePickerText: {
-    fontSize: 16,
-    color: colors.textLight,
-  },
-  submitButton: {
-    backgroundColor: colors.primary,
-    borderRadius: 12,
-    padding: 16,
-    alignItems: 'center',
-    marginTop: 8,
-  },
-  submitButtonDisabled: {
-    backgroundColor: colors.primaryLight,
-    opacity: 0.6,
-  },
-  submitButtonText: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: colors.surface,
   },
 });

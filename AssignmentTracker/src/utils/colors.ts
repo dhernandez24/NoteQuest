@@ -15,4 +15,5 @@ export const colors = {
   test: '#EF4444',
   task: '#8B5CF6',
   other: '#6B7280',
+  accentPink: '#F472B6',
 };

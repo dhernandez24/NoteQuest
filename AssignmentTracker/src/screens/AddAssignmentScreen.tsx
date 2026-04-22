@@ -6,11 +6,12 @@ import {
   ScrollView,
   TextInput,
   TouchableOpacity,
+  Alert,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { colors } from '../utils/colors';
-
-type AssignmentType = 'homework' | 'test' | 'task' | 'other';
+import { useAssignmentsStore } from '../store/AssignmentsStore';
+import { AssignmentType } from '../types';
 
 const TYPE_OPTIONS: AssignmentType[] = ['homework', 'test', 'task', 'other'];
 
@@ -22,8 +23,26 @@ export const AddAssignmentScreen: React.FC<{ navigation: any }> = ({ navigation 
   const [deadlineTime, setDeadlineTime] = useState<string>('3:00 PM');
   const [description, setDescription] = useState('');
 
-  const addAssignment = () => {
-    // This is a prototype; simply navigate back to Home
+  const addAssignmentStore = useAssignmentsStore((state) => state.addAssignment);
+
+  const addAssignment = async () => {
+    if (!title.trim()) {
+      Alert.alert('Missing Title', 'Please enter a title for your assignment.');
+      return;
+    }
+
+    const deadline = deadlineDate
+      ? new Date(`${deadlineDate} ${deadlineTime}`)
+      : new Date(Date.now() + 24 * 60 * 60 * 1000);
+
+    await addAssignmentStore({
+      title: title.trim(),
+      type: selectedType,
+      duration: parseInt(duration, 10) || 60,
+      deadline,
+      description: description.trim(),
+    });
+
     navigation.goBack();
   };
 
@@ -37,6 +56,7 @@ export const AddAssignmentScreen: React.FC<{ navigation: any }> = ({ navigation 
           <TextInput
             style={styles.input}
             placeholder="add title"
+            placeholderTextColor={colors.textLight}
             value={title}
             onChangeText={setTitle}
           />
@@ -48,12 +68,14 @@ export const AddAssignmentScreen: React.FC<{ navigation: any }> = ({ navigation 
             <TextInput
               style={[styles.input, styles.flexHalf]}
               placeholder="Date"
+              placeholderTextColor={colors.textLight}
               value={deadlineDate}
               onChangeText={setDeadlineDate}
             />
             <TextInput
               style={[styles.input, styles.flexHalf]} 
               placeholder="Time"
+              placeholderTextColor={colors.textLight}
               value={deadlineTime}
               onChangeText={setDeadlineTime}
             />
@@ -66,10 +88,20 @@ export const AddAssignmentScreen: React.FC<{ navigation: any }> = ({ navigation 
             {TYPE_OPTIONS.map((t) => (
               <TouchableOpacity
                 key={t}
-                style={[styles.typeOption, selectedType === t && styles.typeOptionSelected]}
+                style={[
+                  styles.typeOption,
+                  selectedType === t && styles.typeOptionSelected,
+                ]}
                 onPress={() => setSelectedType(t)}
               >
-                <Text style={styles.typeOptionText}>{t}</Text>
+                <Text
+                  style={[
+                    styles.typeOptionText,
+                    selectedType === t && styles.typeOptionTextSelected,
+                  ]}
+                >
+                  {t}
+                </Text>
               </TouchableOpacity>
             ))}
           </View>
@@ -80,6 +112,7 @@ export const AddAssignmentScreen: React.FC<{ navigation: any }> = ({ navigation 
           <TextInput
             style={styles.input}
             placeholder="minutes"
+            placeholderTextColor={colors.textLight}
             keyboardType="numeric"
             value={duration}
             onChangeText={setDuration}
@@ -91,6 +124,7 @@ export const AddAssignmentScreen: React.FC<{ navigation: any }> = ({ navigation 
           <TextInput
             style={[styles.input, styles.multiline]}
             placeholder="description"
+            placeholderTextColor={colors.textLight}
             multiline
             numberOfLines={4}
             value={description}
@@ -98,8 +132,13 @@ export const AddAssignmentScreen: React.FC<{ navigation: any }> = ({ navigation 
           />
         </View>
 
-        <TouchableOpacity style={styles.addButton} onPress={addAssignment}>
-          <Text style={styles.addButtonText}>add assignment</Text>
+        {/* Floating Add Button - matching prototype style */}
+        <TouchableOpacity 
+          style={styles.fab} 
+          onPress={addAssignment}
+          activeOpacity={0.85}
+        >
+          <Text style={styles.fabIcon}>+</Text>
         </TouchableOpacity>
       </ScrollView>
     </SafeAreaView>
@@ -107,19 +146,102 @@ export const AddAssignmentScreen: React.FC<{ navigation: any }> = ({ navigation 
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: colors.background },
-  content: { padding: 20, paddingBottom: 40 },
-  title: { fontSize: 20, fontWeight: '600', color: colors.text, marginBottom: 12, textTransform: 'none' },
-  card: { backgroundColor: colors.surface, borderRadius: 20, padding: 18, marginBottom: 16, elevation: 2 },
-  label: { fontSize: 14, color: colors.textSecondary, marginBottom: 8 },
-  input: { backgroundColor: colors.background, borderRadius: 12, padding: 12, fontSize: 16, borderWidth: 1, borderColor: colors.border },
-  multiline: { height: 100, textAlignVertical: 'top' } as any,
-  row: { flexDirection: 'row', gap: 8 },
-  flexHalf: { flex: 1 },
-  typeList: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
-  typeOption: { paddingVertical: 8, paddingHorizontal: 12, borderRadius: 9999, backgroundColor: colors.background, borderWidth: 1, borderColor: colors.border },
-  typeOptionSelected: { backgroundColor: colors.primary, borderColor: colors.primary },
-  typeOptionText: { color: colors.text, fontSize: 14 },
-  addButton: { marginTop: 6, backgroundColor: colors.primary, borderRadius: 12, paddingVertical: 14, alignItems: 'center', justifyContent: 'center' },
-  addButtonText: { color: colors.surface, fontWeight: '600' },
+  container: { 
+    flex: 1, 
+    backgroundColor: colors.background,
+  },
+  content: { 
+    padding: 20, 
+    paddingBottom: 100,
+  },
+  title: { 
+    fontSize: 20, 
+    fontWeight: '600', 
+    color: colors.text, 
+    marginBottom: 12,
+    textTransform: 'none',
+  },
+  card: { 
+    backgroundColor: colors.surface, 
+    borderRadius: 20, 
+    padding: 18, 
+    marginBottom: 16,
+    elevation: 2,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 8,
+  },
+  label: { 
+    fontSize: 14, 
+    color: colors.textSecondary, 
+    marginBottom: 8,
+  },
+  input: { 
+    backgroundColor: colors.background, 
+    borderRadius: 12, 
+    padding: 12, 
+    fontSize: 16, 
+    borderWidth: 1, 
+    borderColor: colors.border,
+    color: colors.text,
+  },
+  multiline: { 
+    height: 100, 
+    textAlignVertical: 'top',
+  },
+  row: { 
+    flexDirection: 'row', 
+    gap: 8,
+  },
+  flexHalf: { 
+    flex: 1,
+  },
+  typeList: { 
+    flexDirection: 'row', 
+    flexWrap: 'wrap', 
+    gap: 8,
+  },
+  typeOption: { 
+    paddingVertical: 10, 
+    paddingHorizontal: 16, 
+    borderRadius: 9999, 
+    backgroundColor: colors.background, 
+    borderWidth: 1, 
+    borderColor: colors.border,
+  },
+  typeOptionSelected: { 
+    backgroundColor: colors.primary, 
+    borderColor: colors.primary,
+  },
+  typeOptionText: { 
+    color: colors.text, 
+    fontSize: 14,
+    textTransform: 'capitalize',
+  },
+  typeOptionTextSelected: {
+    color: colors.surface,
+  },
+  fab: {
+    position: 'absolute',
+    bottom: 24,
+    right: 24,
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    backgroundColor: colors.accentPink || '#F472B6',
+    alignItems: 'center',
+    justifyContent: 'center',
+    elevation: 8,
+    shadowColor: colors.accentPink || '#F472B6',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.4,
+    shadowRadius: 8,
+  },
+  fabIcon: {
+    color: colors.surface,
+    fontSize: 32,
+    fontWeight: '400',
+    marginTop: -2,
+  },
 });
