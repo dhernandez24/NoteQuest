@@ -11,7 +11,7 @@ export const colors = {
   success: '#10B981',
   warning: '#F59E0B',
   error: '#EF4444',
-  homework: '#3B82F6',
+  homework: '#9151c8',
   test: '#EF4444',
   task: '#8B5CF6',
   other: '#6B7280',

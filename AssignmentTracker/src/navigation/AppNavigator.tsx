@@ -2,7 +2,7 @@ import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { View, Text, StyleSheet } from 'react-native';
-import { HomeScreen, CalendarScreen, RewardsScreen, AddAssignmentScreen } from '../screens';
+import { HomeScreen, CalendarScreen, RewardsScreen, AddAssignmentScreen, CompletedAssignmentsScreen } from '../screens';
 import { colors } from '../utils/colors';
 
 const Tab = createBottomTabNavigator();
@@ -30,6 +30,7 @@ export const AppNavigator: React.FC = () => {
     <Stack.Navigator screenOptions={{ headerShown: false }}>
       <Stack.Screen name="Tabs" component={Tabs} />
       <Stack.Screen name="AddAssignment" component={AddAssignmentScreen} />
+      <Stack.Screen name="CompletedAssignments" component={CompletedAssignmentsScreen} />
     </Stack.Navigator>
   );
 };

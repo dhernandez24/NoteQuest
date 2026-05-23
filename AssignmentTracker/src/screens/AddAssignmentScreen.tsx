@@ -118,7 +118,11 @@ export const AddAssignmentScreen: React.FC = () => {
     <SafeAreaView style={styles.container} edges={['top']}>
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
-          <Text style={styles.backButtonText}> </Text>
+          <TouchableOpacity
+           onPress={() => navigation.goBack()}
+          style={styles.backButton} >
+            <Text style={styles.backButtonText}>←</Text>
+          </TouchableOpacity>
         </TouchableOpacity>
         <Text style={styles.title}>{assignmentId ? 'edit assignment' : 'adding assignment'}</Text>
         <View style={{ width: 30 }} />
@@ -236,15 +240,18 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: colors.border,
   },
-  backButton: {
-    position: 'absolute',
-    left: 12,
-    padding: 8,
-  },
-  backButtonText: {
-    fontSize: 20,
-    color: colors.text,
-  },
+backButton: {
+  position: 'absolute',
+  left: 12,
+  paddingHorizontal: 10,
+
+},
+
+backButtonText: {
+  fontSize: 28,
+  color: colors.text,
+  fontWeight: '300',
+},
   title: { 
     fontSize: 20, 
     fontWeight: '600', 

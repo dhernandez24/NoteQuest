@@ -1,10 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import {
   View,
   Text,
   StyleSheet,
   ScrollView,
   RefreshControl,
+  TouchableOpacity,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Assignment } from '../types';
@@ -16,22 +17,26 @@ import { useAssignmentsStore } from '../store/AssignmentsStore';
 import { useNavigation } from '@react-navigation/native';
 
 export const HomeScreen: React.FC = () => {
-  const navigation = useNavigation();
+  const navigation = useNavigation() as any;
   const { assignments, loadAssignments, completeAssignment } = useAssignmentsStore();
   const [refreshing, setRefreshing] = useState(false);
   const [user] = useState(mockUser);
+  const [selectionMode, setSelectionMode] = useState(false);
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
 
   useEffect(() => {
     loadAssignments();
   }, []);
 
-  const onRefresh = async () => {
+  const onRefresh = useCallback(async () => {
     setRefreshing(true);
     await loadAssignments();
     setRefreshing(false);
-  };
+  }, [loadAssignments]);
 
-  const groupedAssignments = assignments.reduce((groups, assignment) => {
+  const pendingAssignments = assignments.filter((a) => a.status === 'pending');
+
+  const groupedAssignments = pendingAssignments.reduce((groups, assignment) => {
     const dateKey = assignment.deadline.toDateString();
     if (!groups[dateKey]) {
       groups[dateKey] = [];
@@ -47,24 +52,51 @@ export const HomeScreen: React.FC = () => {
   const handleAddAssignment = () => {
     const rootNav = navigation.getParent();
     if (rootNav) {
-      (rootNav as any).navigate('AddAssignment');
+      rootNav.navigate('AddAssignment');
     } else {
-      (navigation as any).navigate('AddAssignment');
+      navigation.navigate('AddAssignment');
     }
   };
 
   const handleEditAssignment = (id: string) => {
     const rootNav = navigation.getParent();
     if (rootNav) {
-      (rootNav as any).navigate('AddAssignment', { assignmentId: id });
+      rootNav.navigate('AddAssignment', { assignmentId: id });
     } else {
-      (navigation as any).navigate('AddAssignment', { assignmentId: id });
+      navigation.navigate('AddAssignment', { assignmentId: id });
     }
   };
 
-  const handleCompleteAssignment = async (id: string) => {
-    await completeAssignment(id);
+  const handleSelect = (id: string) => {
+    setSelectedIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) {
+        next.delete(id);
+      } else {
+        next.add(id);
+      }
+      return next;
+    });
   };
+
+  const handleMarkComplete = async () => {
+    const ids = Array.from(selectedIds);
+    await Promise.all(ids.map((id) => completeAssignment(id)));
+    setSelectedIds(new Set());
+    setSelectionMode(false);
+    await loadAssignments();
+  };
+
+  const handleViewCompleted = () => {
+    const rootNav = navigation.getParent();
+    if (rootNav) {
+      rootNav.navigate('CompletedAssignments');
+    } else {
+      navigation.navigate('CompletedAssignments');
+    }
+  };
+
+  const hasSelected = selectedIds.size > 0;
 
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
@@ -86,7 +118,25 @@ export const HomeScreen: React.FC = () => {
         </View>
 
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Upcoming Assignments</Text>
+          <View style={styles.sectionHeaderRow}>
+            <Text style={styles.sectionTitle}>Upcoming Assignments</Text>
+            <View style={styles.sectionActions}>
+              <TouchableOpacity style={styles.completedCta} onPress={handleViewCompleted}>
+                <Text style={styles.completedCtaText}>Completed</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.selectButton}
+                onPress={() => {
+                  setSelectionMode(!selectionMode);
+                  if (selectionMode) setSelectedIds(new Set());
+                }}
+              >
+                <Text style={styles.selectButtonText}>
+                  {selectionMode ? 'Cancel' : 'Select'}
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </View>
           {sortedDates.length === 0 ? (
             <View style={styles.emptyState}>
               <Text style={styles.emptyIcon}>📚</Text>
@@ -106,6 +156,9 @@ export const HomeScreen: React.FC = () => {
                     <AssignmentCard
                       key={assignment.id}
                       assignment={assignment}
+                      selected={selectedIds.has(assignment.id)}
+                      selectionMode={selectionMode}
+                      onSelect={handleSelect}
                       onPress={() => handleEditAssignment(assignment.id)}
                     />
                   ))}
@@ -116,7 +169,22 @@ export const HomeScreen: React.FC = () => {
         </View>
       </ScrollView>
 
-      <FloatingButton onPress={handleAddAssignment} />
+      {selectionMode && (
+        <View style={styles.selectionBar}>
+          <Text style={styles.selectionCount}>
+            {hasSelected ? `${selectedIds.size} selected` : 'Select assignments'}
+          </Text>
+          <TouchableOpacity
+            style={[styles.completeButton, !hasSelected && styles.completeButtonDisabled]}
+            onPress={handleMarkComplete}
+            disabled={!hasSelected}
+          >
+            <Text style={styles.completeButtonText}>Mark as Complete</Text>
+          </TouchableOpacity>
+        </View>
+      )}
+
+      {!selectionMode && <FloatingButton onPress={handleAddAssignment} />}
     </SafeAreaView>
   );
 };
@@ -131,7 +199,7 @@ const styles = StyleSheet.create({
   },
   content: {
     padding: 20,
-    paddingBottom: 100,
+    paddingBottom: 140,
   },
   header: {
     marginBottom: 24,
@@ -149,11 +217,42 @@ const styles = StyleSheet.create({
   section: {
     marginBottom: 24,
   },
+  sectionHeaderRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 16,
+  },
   sectionTitle: {
     fontSize: 18,
     fontWeight: '600',
     color: colors.text,
-    marginBottom: 16,
+  },
+  sectionActions: {
+    flexDirection: 'row',
+    gap: 8,
+  },
+  completedCta: {
+    paddingVertical: 6,
+    paddingHorizontal: 12,
+    borderRadius: 16,
+    backgroundColor: colors.success + '15',
+  },
+  completedCtaText: {
+    fontSize: 13,
+    fontWeight: '500',
+    color: colors.success,
+  },
+  selectButton: {
+    paddingVertical: 6,
+    paddingHorizontal: 12,
+    borderRadius: 16,
+    backgroundColor: colors.primary + '15',
+  },
+  selectButtonText: {
+    fontSize: 13,
+    fontWeight: '500',
+    color: colors.primary,
   },
   dayGroup: {
     marginBottom: 16,
@@ -186,5 +285,42 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: colors.textSecondary,
     textAlign: 'center',
+  },
+  selectionBar: {
+    position: 'absolute',
+    bottom: 24,
+    left: 20,
+    right: 20,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    backgroundColor: colors.surface,
+    borderRadius: 20,
+    paddingVertical: 14,
+    paddingHorizontal: 20,
+    elevation: 8,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.15,
+    shadowRadius: 12,
+  },
+  selectionCount: {
+    fontSize: 14,
+    fontWeight: '500',
+    color: colors.textSecondary,
+  },
+  completeButton: {
+    backgroundColor: colors.primary,
+    borderRadius: 12,
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+  },
+  completeButtonDisabled: {
+    backgroundColor: colors.border,
+  },
+  completeButtonText: {
+    color: colors.surface,
+    fontWeight: '600',
+    fontSize: 14,
   },
 });
