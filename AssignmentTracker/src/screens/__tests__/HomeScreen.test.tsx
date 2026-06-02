@@ -6,13 +6,16 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react-nativ
 import { HomeScreen } from '../HomeScreen';
 
 // Mock the useAssignmentsStore hook
+const mockUseAssignmentsStore = jest.fn();
 jest.mock('../store/AssignmentsStore', () => ({
-  useAssignmentsStore: () => ({
-    assignments: [],
-    loadAssignments: jest.fn(),
-    completeAssignment: jest.fn(),
-  }),
+  useAssignmentsStore: mockUseAssignmentsStore,
 }));
+
+mockUseAssignmentsStore.mockReturnValue({
+  assignments: [],
+  loadAssignments: jest.fn(),
+  completeAssignment: jest.fn(),
+});
 
 // Mock useNavigation
 jest.mock('@react-navigation/native', () => ({
@@ -58,28 +61,27 @@ describe('HomeScreen', () => {
 
   // We'll add a test for when there are assignments
   it('renders assignments when they exist', () => {
-    // Mock the assignments store to return some data
-    const { useAssignmentsStore } = require('../store/AssignmentsStore');
-    useAssignmentsStore.mockReturnValue({
-      assignments: [
-        {
-          id: '1',
-          title: 'Test Assignment',
-          type: 'homework' as const,
-          duration: 60,
-          deadline: new Date(),
-          description: 'Test description',
-          status: 'pending' as const,
-          coinReward: 5,
-          createdAt: new Date(),
-          completedAt: undefined,
-        },
-      ],
-      loadAssignments: jest.fn(),
-      completeAssignment: jest.fn(),
-    });
-
-    render(<HomeScreen />);
-    expect(screen.getByText(/test assignment/i)).toBeTruthy();
+  mockUseAssignmentsStore.mockReturnValue({
+    assignments: [
+      {
+        id: '1',
+        title: 'Test Assignment',
+        type: 'homework',
+        duration: 60,
+        deadline: new Date(),
+        description: 'Test description',
+        status: 'pending',
+        coinReward: 5,
+        createdAt: new Date(),
+      },
+    ],
+    loadAssignments: jest.fn(),
+    completeAssignment: jest.fn(),
   });
+
+  render(<HomeScreen />);
+  expect(screen.getByText(/test assignment/i)).toBeTruthy();
+});
+
+    
 });
