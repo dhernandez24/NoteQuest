@@ -1,68 +1,52 @@
-/**
- * Simple unit test for HomeScreen
- */
 import React from 'react';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react-native';
+import { render, fireEvent } from '@testing-library/react-native';
 import { HomeScreen } from '../HomeScreen';
 
-// Mock the useAssignmentsStore hook
-const mockUseAssignmentsStore = jest.fn();
-jest.mock('../store/AssignmentsStore', () => ({
-  useAssignmentsStore: mockUseAssignmentsStore,
+const mockLoadAssignments = jest.fn();
+const mockCompleteAssignment = jest.fn();
+let mockAssignments: any[] = [];
+
+jest.mock('../../store/AssignmentsStore', () => ({
+  useAssignmentsStore: () => ({
+    get assignments() { return mockAssignments; },
+    loadAssignments: mockLoadAssignments,
+    completeAssignment: mockCompleteAssignment,
+  }),
 }));
 
-mockUseAssignmentsStore.mockReturnValue({
-  assignments: [],
-  loadAssignments: jest.fn(),
-  completeAssignment: jest.fn(),
-});
-
-// Mock useNavigation
+const mockNavigate = jest.fn();
 jest.mock('@react-navigation/native', () => ({
   useNavigation: () => ({
-    navigate: jest.fn(),
-    getParent: () => ({
-      navigate: jest.fn(),
-    }),
+    navigate: mockNavigate,
+    getParent: () => null,
   }),
 }));
 
 describe('HomeScreen', () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    mockAssignments = [];
   });
 
   it('renders without crashing', () => {
-    render(<HomeScreen />);
-    expect(screen.getByText(/assignment tracker/i)).toBeTruthy();
+    const { getByText } = render(<HomeScreen />);
+    expect(getByText(/assignment tracker/i)).toBeTruthy();
   });
 
   it('shows empty state when no assignments', () => {
-    render(<HomeScreen />);
-    expect(screen.getByText(/no assignments yet/i)).toBeTruthy();
+    const { getByText } = render(<HomeScreen />);
+    expect(getByText(/no assignments yet/i)).toBeTruthy();
   });
 
-  it('navigates to AddAssignmentScreen when FAB is pressed', () => {
-    const { navigate } = require('@react-navigation/native');
-    render(<HomeScreen />);
-    const fab = screen.getByTestId('fab'); // We'll need to add a testID to the FAB in HomeScreen
-    // Since we don't have a testID, we can try to find by accessibility label or by being the only TouchableOpacity?
-    // For simplicity, let's skip this test until we add a testID, or we can press by coordinates? Not ideal.
-    // Instead, we'll test the handleAddAssignment function indirectly by checking if navigate is called.
-    // But we don't have direct access to the function. We'll adjust the test to be more about the UI.
-    // Alternatively, we can test that the FAB exists.
-    const fabElement = screen.getByLabelText(/add assignment/i); // If we set an accessibilityLabel
-    // Since we haven't set one, let's change the test to just check that the FAB is present by its being a TouchableOpacity?
-    // We'll do a simple check: there should be at least one TouchableOpacity (the FAB) in addition to others.
-    // But this is fragile. Let's instead add a testID to the FAB in the HomeScreen and then use it.
-    // However, the user asked for simple tests, so we'll skip the navigation test for now and just check the FAB renders.
-    expect(screen.getByTestId('fab')).toBeTruthy(); // This will fail until we add the testID.
+  it('navigates to AddAssignment when FAB is pressed', () => {
+    const { getByLabelText } = render(<HomeScreen />);
+    const fab = getByLabelText(/add assignment/i);
+    fireEvent.press(fab);
+    expect(mockNavigate).toHaveBeenCalledWith('AddAssignment');
   });
 
-  // We'll add a test for when there are assignments
   it('renders assignments when they exist', () => {
-  mockUseAssignmentsStore.mockReturnValue({
-    assignments: [
+    mockAssignments = [
       {
         id: '1',
         title: 'Test Assignment',
@@ -74,14 +58,10 @@ describe('HomeScreen', () => {
         coinReward: 5,
         createdAt: new Date(),
       },
-    ],
-    loadAssignments: jest.fn(),
-    completeAssignment: jest.fn(),
+    ];
+
+    const { rerender, getByText } = render(<HomeScreen />);
+    rerender(<HomeScreen />);
+    expect(getByText(/test assignment/i)).toBeTruthy();
   });
-
-  render(<HomeScreen />);
-  expect(screen.getByText(/test assignment/i)).toBeTruthy();
-});
-
-    
 });

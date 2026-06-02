@@ -8,7 +8,7 @@ interface FloatingButtonProps {
 
 export const FloatingButton: React.FC<FloatingButtonProps> = ({ onPress }) => {
   return (
-    <TouchableOpacity style={styles.button} onPress={onPress} activeOpacity={0.8}>
+    <TouchableOpacity style={styles.button} onPress={onPress} activeOpacity={0.8} accessibilityLabel="Add Assignment">
       <View style={styles.iconContainer}>
         <View style={styles.horizontal} />
         <View style={styles.vertical} />

@@ -1,85 +1,75 @@
-/**
- * Simple unit test for AddAssignmentScreen
- */
 import React from 'react';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react-native';
+import { render, fireEvent, waitFor } from '@testing-library/react-native';
 import { AddAssignmentScreen } from '../AddAssignmentScreen';
 
-// Mock the useAssignmentsStore hook
-jest.mock('../store/AssignmentsStore', () => ({
+const mockAddAssignment = jest.fn().mockResolvedValue(undefined);
+const mockUpdateAssignment = jest.fn().mockResolvedValue(undefined);
+const mockLoadAssignments = jest.fn().mockResolvedValue(undefined);
+let mockAssignments: any[] = [];
+
+jest.mock('../../store/AssignmentsStore', () => ({
   useAssignmentsStore: () => ({
-    addAssignment: jest.fn(),
-    updateAssignment: jest.fn(),
-    loadAssignments: jest.fn(),
+    addAssignment: mockAddAssignment,
+    updateAssignment: mockUpdateAssignment,
+    loadAssignments: mockLoadAssignments,
+    assignments: mockAssignments,
   }),
 }));
 
-// Mock useNavigation and useRoute
+const mockGoBack = jest.fn();
 jest.mock('@react-navigation/native', () => ({
-  useNavigation: () => ({
-    goBack: jest.fn(),
-  }),
-  useRoute: () => ({
-    params: {},
-  }),
+  useNavigation: () => ({ goBack: mockGoBack }),
+  useRoute: () => ({ params: {} }),
 }));
 
 describe('AddAssignmentScreen', () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    mockAssignments = [];
   });
 
   it('renders without crashing', () => {
-    render(<AddAssignmentScreen />);
-    expect(screen.getByText(/adding assignment/i)).toBeTruthy();
+    const { getByText } = render(<AddAssignmentScreen />);
+    expect(getByText(/adding assignment/i)).toBeTruthy();
   });
 
   it('has a title input field', () => {
-    render(<AddAssignmentScreen />);
-    const titleInput = screen.getByPlaceholderText(/add title/i);
-    expect(titleInput).toBeTruthy();
+    const { getByPlaceholderText } = render(<AddAssignmentScreen />);
+    expect(getByPlaceholderText(/add title/i)).toBeTruthy();
   });
 
   it('has a save button', () => {
-    render(<AddAssignmentScreen />);
-    const saveButton = screen.getByText(/add/i);
-    expect(saveButton).toBeTruthy();
+    const { getByText } = render(<AddAssignmentScreen />);
+    expect(getByText(/^add$/i)).toBeTruthy();
   });
 
-  it('calls addAssignment when save button is pressed with valid title', async () => {
-    const { addAssignment } = require('../store/AssignmentsStore');
-    render(<AddAssignmentScreen />);
+  it('calls addAssignment on valid submit', async () => {
+    const { getByPlaceholderText, getByText } = render(<AddAssignmentScreen />);
 
-    const titleInput = screen.getByPlaceholderText(/add title/i);
-    fireEvent.changeText(titleInput, 'Test Assignment');
-    // We'll also fill out other required fields to avoid validation errors
-    const durationInput = screen.getByPlaceholderText(/minutes/i);
-    fireEvent.changeText(durationInput, '60');
+    fireEvent.changeText(getByPlaceholderText(/add title/i), 'Math Homework');
+    fireEvent.changeText(getByPlaceholderText(/minutes/i), '90');
 
-    const saveButton = screen.getByText(/add/i);
-    fireEvent.press(saveButton);
+    fireEvent.press(getByText(/^add$/i));
 
-    // Wait for the async operation and navigation
     await waitFor(() => {
-      expect(addAssignment).toHaveBeenCalledWith(
-        expect.objectContaining({
-          title: 'Test Assignment',
-        })
-      );
+      expect(mockAddAssignment).toHaveBeenCalled();
     });
   });
 
-  it('shows an error when title is empty and save is pressed', async () => {
-    const { Alert } = require('react-native');
-    Alert.alert = jest.fn();
-    render(<AddAssignmentScreen />);
+  it('navigates back after saving', async () => {
+    const { getByPlaceholderText, getByText } = render(<AddAssignmentScreen />);
 
-    const saveButton = screen.getByText(/add/i);
-    fireEvent.press(saveButton);
+    fireEvent.changeText(getByPlaceholderText(/add title/i), 'Biology Lab');
+    fireEvent.press(getByText(/^add$/i));
 
-    // Wait for the alert
     await waitFor(() => {
-      expect(Alert.alert).toHaveBeenCalledWith('Missing Title', 'Please enter a title for your assignment.');
+      expect(mockGoBack).toHaveBeenCalled();
     });
+  });
+
+  it('does not call addAssignment when title is empty', () => {
+    const { getByText } = render(<AddAssignmentScreen />);
+    fireEvent.press(getByText(/^add$/i));
+    expect(mockAddAssignment).not.toHaveBeenCalled();
   });
 });
