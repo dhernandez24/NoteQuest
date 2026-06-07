@@ -112,13 +112,17 @@ export const HomeScreen: React.FC = () => {
           <Text style={styles.appTitle}>Assignment Tracker</Text>
           <Text style={styles.date}>{formatFullDate(new Date())}</Text>
         </View>
-
-        <View style={styles.section}>
+        <View style={styles.addbutton}>
+        {!selectionMode && <FloatingButton onPress={handleAddAssignment} />}
+        </View>
+          
+        <View style={styles.section2}>
           <UserCard name={user.name} coinBalance={user.coinBalance} />
         </View>
 
         <View style={styles.section}>
           <View style={styles.sectionHeaderRow}>
+           
             <Text style={styles.sectionTitle}>Upcoming Assignments</Text>
             <View style={styles.sectionActions}>
               <TouchableOpacity style={styles.completedCta} onPress={handleViewCompleted}>
@@ -184,7 +188,7 @@ export const HomeScreen: React.FC = () => {
         </View>
       )}
 
-      {!selectionMode && <FloatingButton onPress={handleAddAssignment} />}
+      
     </SafeAreaView>
   );
 };
@@ -202,19 +206,36 @@ const styles = StyleSheet.create({
     paddingBottom: 140,
   },
   header: {
+  backgroundColor: '#683A67',
+  padding: 24,
+  marginHorizontal: -20,
+  paddingHorizontal: 20,
+  borderBottomLeftRadius: 30,
+  borderBottomRightRadius: 30,
+  marginBottom: 24,
+
+  },
+
+  addbutton: {
     marginBottom: 24,
+
   },
   appTitle: {
-    fontSize: 28,
-    fontWeight: '700',
-    color: colors.text,
-    marginBottom: 4,
+  color: '#FFF',
+  fontFamily: 'Irish Grover',
+  fontSize: 36,
+  fontStyle: 'normal',
+  fontWeight: '400',
+  marginBottom: 4,
   },
   date: {
     fontSize: 14,
     color: colors.textSecondary,
   },
   section: {
+    marginBottom: 24,
+  },
+  section2: {
     marginBottom: 24,
   },
   sectionHeaderRow: {
@@ -288,8 +309,8 @@ const styles = StyleSheet.create({
   },
   selectionBar: {
     position: 'absolute',
-    bottom: 24,
-    left: 20,
+    bottom: 10,
+    left: 100,
     right: 20,
     flexDirection: 'row',
     alignItems: 'center',
