@@ -4,10 +4,12 @@ import {
   Text,
   StyleSheet,
   ScrollView,
+  Image,
   RefreshControl,
   TouchableOpacity,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+
 import { Assignment } from '../types';
 import { mockUser } from '../data/mockData';
 import { AssignmentCard, UserCard, FloatingButton } from '../components';
@@ -100,6 +102,14 @@ export const HomeScreen: React.FC = () => {
 
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
+      <View style={styles.header}>
+      <Image
+        source={require('../../assets/NoteQuest.png')}
+        style={styles.logo}
+      />
+
+          <Text style={styles.date}>{formatFullDate(new Date())}</Text>
+        </View>
       <ScrollView
         style={styles.scrollView}
         contentContainerStyle={styles.content}
@@ -108,10 +118,7 @@ export const HomeScreen: React.FC = () => {
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.primary} />
         }
       >
-        <View style={styles.header}>
-          <Text style={styles.appTitle}>Assignment Tracker</Text>
-          <Text style={styles.date}>{formatFullDate(new Date())}</Text>
-        </View>
+        
         <View style={styles.addbutton}>
         {!selectionMode && <FloatingButton onPress={handleAddAssignment} />}
         </View>
@@ -206,13 +213,29 @@ const styles = StyleSheet.create({
     paddingBottom: 140,
   },
   header: {
-  backgroundColor: '#683A67',
-  padding: 24,
+  backgroundColor: '#000',
+
+  borderBottomWidth: 10,
+  borderRightWidth: 10,
+  borderLeftWidth: 10,
+  borderBottomColor: '#134FAA',
+  borderRightColor: '#134FAA',
+  borderLeftColor: '#134FAA',
   marginHorizontal: -20,
-  paddingHorizontal: 20,
-  borderBottomLeftRadius: 30,
-  borderBottomRightRadius: 30,
-  marginBottom: 24,
+
+  borderBottomLeftRadius: 60,
+  borderBottomRightRadius: 60,
+
+
+
+
+  },
+  logo: {
+    width: 200,
+    height: 200,
+    alignSelf: 'center',
+    marginBottom: -50,
+    marginTop: -30,
 
   },
 
@@ -220,17 +243,12 @@ const styles = StyleSheet.create({
     marginBottom: 24,
 
   },
-  appTitle: {
-  color: '#FFF',
-  fontFamily: 'Irish Grover',
-  fontSize: 36,
-  fontStyle: 'normal',
-  fontWeight: '400',
-  marginBottom: 4,
-  },
+ 
   date: {
-    fontSize: 14,
-    color: colors.textSecondary,
+    fontSize: 16,
+    alignSelf: 'center',
+    color: '#FFF',
+    marginBottom: 16,
   },
   section: {
     marginBottom: 24,

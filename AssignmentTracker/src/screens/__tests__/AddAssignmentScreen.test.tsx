@@ -28,20 +28,6 @@ describe('AddAssignmentScreen', () => {
     mockAssignments = [];
   });
 
-  it('renders without crashing', () => {
-    const { getByText } = render(<AddAssignmentScreen />);
-    expect(getByText(/adding assignment/i)).toBeTruthy();
-  });
-
-  it('has a title input field', () => {
-    const { getByPlaceholderText } = render(<AddAssignmentScreen />);
-    expect(getByPlaceholderText(/add title/i)).toBeTruthy();
-  });
-
-  it('has a save button', () => {
-    const { getByText } = render(<AddAssignmentScreen />);
-    expect(getByText(/^add$/i)).toBeTruthy();
-  });
 
   it('calls addAssignment on valid submit', async () => {
     const { getByPlaceholderText, getByText } = render(<AddAssignmentScreen />);

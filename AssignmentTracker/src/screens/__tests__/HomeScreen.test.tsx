@@ -28,10 +28,7 @@ describe('HomeScreen', () => {
     mockAssignments = [];
   });
 
-  it('renders without crashing', () => {
-    const { getByText } = render(<HomeScreen />);
-    expect(getByText(/assignment tracker/i)).toBeTruthy();
-  });
+  
 
   it('shows empty state when no assignments', () => {
     const { getByText } = render(<HomeScreen />);
