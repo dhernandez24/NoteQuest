@@ -107,9 +107,13 @@ export const HomeScreen: React.FC = () => {
         source={require('../../assets/NoteQuest.png')}
         style={styles.logo}
       />
-
-          <Text style={styles.date}>{formatFullDate(new Date())}</Text>
+         <Image
+        source={require('../../assets/settings.png')}
+        style={styles.settingsIcon}
+      />
+         
         </View>
+         <Text style={styles.date}>{formatFullDate(new Date())}</Text>
       <ScrollView
         style={styles.scrollView}
         contentContainerStyle={styles.content}
@@ -150,7 +154,7 @@ export const HomeScreen: React.FC = () => {
           </View>
           {sortedDates.length === 0 ? (
             <View style={styles.emptyState}>
-              <Text style={styles.emptyIcon}>📚</Text>
+              <Text style={styles.emptyIcon}>e</Text>
               <Text style={styles.emptyTitle}>No assignments yet</Text>
               <Text style={styles.emptyText}>
                 Tap the + button to add your first assignment
@@ -213,9 +217,9 @@ const styles = StyleSheet.create({
     paddingBottom: 140,
   },
   header: {
-  backgroundColor: '#000',
+  backgroundColor: '#161414',
 
-  borderBottomWidth: 10,
+  borderBottomWidth: 30,
   borderRightWidth: 10,
   borderLeftWidth: 10,
   borderBottomColor: '#134FAA',
@@ -238,6 +242,13 @@ const styles = StyleSheet.create({
     marginTop: -30,
 
   },
+  settingsIcon: {
+    width: 70,
+    height: 70,
+    position: 'absolute',
+    top: 20,
+    right: 20,
+  },
 
   addbutton: {
     marginBottom: 24,
@@ -248,7 +259,8 @@ const styles = StyleSheet.create({
     fontSize: 16,
     alignSelf: 'center',
     color: '#FFF',
-    marginBottom: 16,
+    marginTop: -25,
+
   },
   section: {
     marginBottom: 24,
@@ -286,7 +298,7 @@ const styles = StyleSheet.create({
     paddingVertical: 6,
     paddingHorizontal: 12,
     borderRadius: 16,
-    backgroundColor: colors.primary + '15',
+    backgroundColor: '#134FAA' + 15,
   },
   selectButtonText: {
     fontSize: 13,

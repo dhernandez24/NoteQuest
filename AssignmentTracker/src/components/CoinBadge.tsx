@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, Image } from 'react-native';
 import { colors } from '../utils/colors';
 
 interface CoinBadgeProps {
@@ -23,7 +23,10 @@ export const CoinBadge: React.FC<CoinBadgeProps> = ({ amount, size = 'medium' })
 
   return (
     <View style={[styles.container, { paddingHorizontal: sizeStyles.paddingHorizontal, paddingVertical: sizeStyles.paddingVertical }]}>
-      <Text style={[styles.icon, { fontSize: sizeStyles.fontSize }]}>🪙</Text>
+      <Image
+        source={require('../../assets/coin.png')}
+        style={[styles.icon, { width: sizeStyles.fontSize, height: sizeStyles.fontSize }]}
+      />
       <Text style={[styles.amount, { fontSize: sizeStyles.fontSize }]}>{amount}</Text>
     </View>
   );
