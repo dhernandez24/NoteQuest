@@ -1,17 +1,34 @@
 import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet , Image} from 'react-native';
 import { HomeScreen, CalendarScreen, RewardsScreen, AddAssignmentScreen, CompletedAssignmentsScreen } from '../screens';
 import { colors } from '../utils/colors';
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
 
-const TabIcon: React.FC<{ label: string; focused: boolean; icon: string }> = ({ label, focused, icon }) => (
+import { ImageSourcePropType } from 'react-native';
+
+const TabIcon: React.FC<{
+  label: string;
+  focused: boolean;
+  icon: ImageSourcePropType;
+}> = ({ label, focused, icon }) => (
   <View style={styles.tabIconContainer}>
-    <Text style={[styles.tabIcon, focused && styles.tabIconFocused]}>{icon}</Text>
-    <Text style={[styles.tabLabel, focused && styles.tabLabelFocused]}>{label}</Text>
+    <Image
+      source={icon}
+      style={[
+        { width: 70, height: 70, tintColor: focused ? colors.primary : colors.textSecondary }
+      ]}
+      resizeMode="contain"
+    />
+    <Text
+  numberOfLines={1}
+  style={[styles.tabLabel, focused && styles.tabLabelFocused]}
+>
+  {label}
+</Text>
   </View>
 );
 
@@ -19,9 +36,49 @@ const Tabs: React.FC = () => (
   <Tab.Navigator
     screenOptions={{ headerShown: false, tabBarStyle: styles.tabBar, tabBarShowLabel: false }}
   >
-    <Tab.Screen name="Home" component={HomeScreen} options={{ tabBarIcon: ({ focused }) => <TabIcon label="Home" focused={focused} icon="🏠" /> }} />
-    <Tab.Screen name="Calendar" component={CalendarScreen} options={{ tabBarIcon: ({ focused }) => <TabIcon label="Calendar" focused={focused} icon="📅" /> }} />
-    <Tab.Screen name="Rewards" component={RewardsScreen} options={{ tabBarIcon: ({ focused }) => <TabIcon label="Rewards" focused={focused} icon="🎁" /> }} />
+    <Tab.Screen
+  name="Home"
+  component={HomeScreen}
+  options={{
+    tabBarIcon: ({ focused }) => (
+      <TabIcon
+        label="Home"
+        focused={focused}
+        icon={require('../../assets/houseIcon.png')}
+      />
+    ),
+  }}
+/>
+  <Tab.Screen
+  name="Calendar"
+  component={CalendarScreen}
+  options={{
+    tabBarIcon: ({ focused }) => (
+      <TabIcon
+        label="Calendar"
+        focused={focused}
+        icon={require('../../assets/calenderIcon.png')}
+      />
+    ),
+  }}
+/>
+
+
+    <Tab.Screen
+  name="Rewards"
+  component={RewardsScreen}
+  options={{
+    tabBarIcon: ({ focused }) => (
+      <TabIcon
+        label="Rewards"
+        focused={focused}
+        icon={require('../../assets/gameIcon.png')}
+      />
+    ),
+  }}
+/>
+    
+    
   </Tab.Navigator>
 );
 
@@ -37,40 +94,48 @@ export const AppNavigator: React.FC = () => {
 
 const styles = StyleSheet.create({
   tabBar: {
-    position: 'absolute',
-    bottom: 24,
-    left: 24,
-    right: 24,
+   
+    bottom: 50,
+    width: '90%',
+    alignSelf: 'center',
     height: 70,
     backgroundColor: colors.surface,
-    borderRadius: 24,
+    borderRadius: 50,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.1,
     shadowRadius: 12,
     elevation: 8,
-    borderTopWidth: 0,
-    paddingBottom: 0,
+
+    
   },
   tabIconContainer: {
+    
+    flexDirection: 'column',
     alignItems: 'center',
-    justifyContent: 'center',
-    paddingTop: 12,
+    justifyContent: 'center', 
+
   },
   tabIcon: {
     fontSize: 24,
-    marginBottom: 4,
+
+  
     opacity: 0.5,
+    alignSelf: 'center',
   },
   tabIconFocused: {
     opacity: 1,
+    tintColor: colors.primary,
   },
   tabLabel: {
-    fontSize: 11,
-    fontWeight: '500',
-    color: colors.textSecondary,
+     fontSize: 11,
+   
+
+  fontWeight: '500',
+  color: colors.textSecondary,
+  flexWrap: 'nowrap',  
   },
   tabLabelFocused: {
-    color: colors.primary,
+    color: colors.textSecondary,
   },
 });

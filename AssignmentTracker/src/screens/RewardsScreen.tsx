@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity,Image } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { mockUser } from '../data/mockData';
 import { CoinBadge } from '../components';
@@ -88,7 +88,10 @@ export const RewardsScreen: React.FC = () => {
           <View style={styles.balanceContent}>
             <Text style={styles.balanceLabel}>Your Balance</Text>
             <View style={styles.balanceRow}>
-              <Text style={styles.coinIcon}>🪙</Text>
+              <Image
+                      source={require('../../assets/coin.png')}
+                      style={styles.coinIcon}
+                    />
               <Text style={styles.balanceAmount}>{userBalance}</Text>
             </View>
           </View>
