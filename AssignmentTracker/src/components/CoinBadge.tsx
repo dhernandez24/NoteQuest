@@ -11,11 +11,23 @@ export const CoinBadge: React.FC<CoinBadgeProps> = ({ amount, size = 'medium' })
   const getSizeStyles = () => {
     switch (size) {
       case 'small':
-        return { paddingHorizontal: 8, paddingVertical: 4, fontSize: 12 };
+        return { paddingHorizontal: 8, 
+          paddingVertical: 4, 
+          fontSize: 12,
+          iconSize: 25,
+        };
       case 'large':
-        return { paddingHorizontal: 16, paddingVertical: 8, fontSize: 18 };
+        return { paddingHorizontal: 16, 
+          paddingVertical: 6, 
+          fontSize: 18,
+          iconSize: 25,
+        };
       default:
-        return { paddingHorizontal: 12, paddingVertical: 6, fontSize: 14 };
+        return { paddingHorizontal: 12, 
+          paddingVertical: 6, 
+          fontSize: 14,
+          iconSize: 20,
+        };
     }
   };
 
@@ -25,7 +37,7 @@ export const CoinBadge: React.FC<CoinBadgeProps> = ({ amount, size = 'medium' })
     <View style={[styles.container, { paddingHorizontal: sizeStyles.paddingHorizontal, paddingVertical: sizeStyles.paddingVertical }]}>
       <Image
         source={require('../../assets/coin.png')}
-        style={[styles.icon, { width: sizeStyles.fontSize, height: sizeStyles.fontSize }]}
+        style={[styles.icon, { width: sizeStyles.iconSize, height: sizeStyles.iconSize }]}
       />
       <Text style={[styles.amount, { fontSize: sizeStyles.fontSize }]}>{amount}</Text>
     </View>

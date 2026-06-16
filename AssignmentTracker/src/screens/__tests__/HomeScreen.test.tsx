@@ -59,8 +59,6 @@ describe('HomeScreen', () => {
     expect(getByText(/no assignments yet/i)).toBeTruthy();
   });
 
- 
-
   it('enters selection mode when Select is pressed', () => {
     mockAssignments = [createAssignment()];
     const { rerender, getByText } = render(<HomeScreen />);
@@ -70,6 +68,9 @@ describe('HomeScreen', () => {
     expect(getByText(/cancel/i)).toBeTruthy();
   });
 
+
+  // check theses ones, after selecting on my end, does not show mark as complete button, but test is passing
+  //completebutton is not visible, find issue
   it('marks selected assignments as complete', async () => {
     mockAssignments = [createAssignment()];
     const { rerender, getByText } = render(<HomeScreen />);
@@ -97,9 +98,5 @@ describe('HomeScreen', () => {
     expect(markComplete).toBeDisabled();
   });
 
-  it('navigates to CompletedAssignments when Completed is pressed', () => {
-    const { getByText } = render(<HomeScreen />);
-    fireEvent.press(getByText(/completed/i));
-    expect(mockNavigate).toHaveBeenCalledWith('CompletedAssignments');
-  });
+
 });

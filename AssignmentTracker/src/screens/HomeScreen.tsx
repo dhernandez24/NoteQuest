@@ -207,6 +207,7 @@ export const HomeScreen: React.FC = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    marginTop: -60,
     backgroundColor: colors.background,
   },
   scrollView: {
@@ -218,6 +219,7 @@ const styles = StyleSheet.create({
   },
   header: {
   backgroundColor: '#161414',
+
 
   borderBottomWidth: 30,
   borderRightWidth: 10,
@@ -231,27 +233,26 @@ const styles = StyleSheet.create({
   borderBottomRightRadius: 60,
 
 
-
-
   },
   logo: {
     width: 200,
     height: 200,
     alignSelf: 'center',
     marginBottom: -50,
-    marginTop: -30,
+    marginTop: 5,
 
   },
   settingsIcon: {
     width: 70,
-    height: 70,
+    height: 50,
     position: 'absolute',
-    top: 20,
+    top: 60,
     right: 20,
   },
 
   addbutton: {
     marginBottom: 24,
+    marginTop: 10,
 
   },
  
