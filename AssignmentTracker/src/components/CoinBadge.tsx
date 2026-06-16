@@ -11,22 +11,25 @@ export const CoinBadge: React.FC<CoinBadgeProps> = ({ amount, size = 'medium' })
   const getSizeStyles = () => {
     switch (size) {
       case 'small':
-        return { paddingHorizontal: 8, 
-          paddingVertical: 4, 
-          fontSize: 12,
-          iconSize: 25,
+        return { paddingHorizontal: 14, 
+          paddingVertical: 2, 
+          fontSize: 18,
+          iconSize: 40,
+          marginRight: 8,
         };
       case 'large':
-        return { paddingHorizontal: 16, 
-          paddingVertical: 6, 
+        return { paddingHorizontal: 14, 
+          paddingVertical: 2, 
           fontSize: 18,
-          iconSize: 25,
+          iconSize: 40,
+          marginRight: 8,
         };
       default:
-        return { paddingHorizontal: 12, 
-          paddingVertical: 6, 
-          fontSize: 14,
-          iconSize: 20,
+        return { paddingHorizontal: 14, 
+          paddingVertical: 2, 
+          fontSize: 18,
+          iconSize: 40,
+          marginRight: 8,
         };
     }
   };
@@ -50,9 +53,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: colors.secondary + '20',
     borderRadius: 20,
+    
   },
   icon: {
-    marginRight: 4,
+    marginRight: -7,
+    marginLeft: -8,
   },
   amount: {
     fontWeight: '600',

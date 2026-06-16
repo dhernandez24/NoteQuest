@@ -104,7 +104,7 @@ export const HomeScreen: React.FC = () => {
     <SafeAreaView style={styles.container} edges={['top']}>
       <View style={styles.header}>
       <Image
-        source={require('../../assets/NoteQuest.png')}
+        source={require('../../assets/NoteQuest2.png')}
         style={styles.logo}
       />
          <Image
@@ -218,15 +218,12 @@ const styles = StyleSheet.create({
     paddingBottom: 140,
   },
   header: {
-  backgroundColor: '#161414',
-
-
-  borderBottomWidth: 30,
+  backgroundColor: '#141B41',
+  borderBottomWidth: 40,
   borderRightWidth: 10,
   borderLeftWidth: 10,
-  borderBottomColor: '#134FAA',
-  borderRightColor: '#134FAA',
-  borderLeftColor: '#134FAA',
+  borderBottomColor: '#6F9CEB',
+
   marginHorizontal: -20,
 
   borderBottomLeftRadius: 60,
@@ -235,7 +232,7 @@ const styles = StyleSheet.create({
 
   },
   logo: {
-    width: 200,
+    width: 270,
     height: 200,
     alignSelf: 'center',
     marginBottom: -50,
@@ -252,16 +249,16 @@ const styles = StyleSheet.create({
 
   addbutton: {
     marginBottom: 24,
-    marginTop: 10,
+    marginTop: 20,
 
   },
  
   date: {
-    fontSize: 16,
+    fontSize: 17,
     alignSelf: 'center',
     color: '#FFF',
-    marginTop: -25,
-
+    marginTop:-30,
+    
   },
   section: {
     marginBottom: 24,
