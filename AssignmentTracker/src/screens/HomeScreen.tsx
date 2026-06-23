@@ -7,6 +7,7 @@ import {
   Image,
   RefreshControl,
   TouchableOpacity,
+  Modal
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
  
@@ -68,10 +69,9 @@ export const HomeScreen: React.FC = () => {
       navigation.navigate('AddAssignment', { assignmentId: id });
     }
   };
-    const handleQuestionPress = () => {
-  console.log('Help button pressed');
+const handleQuestionPress = () => {
+  setHelpVisible(true);
 };
-
 const handleSettingsPress = () => {
   navigation.navigate('Settings');
 };
@@ -103,9 +103,9 @@ const handleSettingsPress = () => {
       navigation.navigate('CompletedAssignments');
     }
   };
-
+    
   const hasSelected = selectedIds.size > 0;
-
+  const [helpVisible, setHelpVisible] = useState(false); 
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
       <View style={styles.header}>
@@ -174,7 +174,7 @@ const handleSettingsPress = () => {
           </View>
           {sortedDates.length === 0 ? (
             <View style={styles.emptyState}>
-              <Text style={styles.emptyIcon}>e</Text>
+    
               <Text style={styles.emptyTitle}>No assignments yet</Text>
               <Text style={styles.emptyText}>
                 Tap the + button to add your first assignment
@@ -217,7 +217,32 @@ const handleSettingsPress = () => {
         </View>
       )}
 
-      
+      <Modal
+  visible={helpVisible}
+  transparent={true}
+  animationType="fade"
+  onRequestClose={() => setHelpVisible(false)}
+>
+  <View style={styles.modalOverlay}>
+    <View style={styles.modalContent}>
+      <Text style={styles.modalTitle}>How to Use NoteQuest</Text>
+
+      <Text style={styles.modalText}>
+        • Tap + to add assignments{"\n"}
+        • Tap an assignment to edit it{"\n"}
+        • Use Select to mark multiple assignments{"\n"}
+        • Earn coins by completing tasks
+      </Text>
+
+      <TouchableOpacity
+        style={styles.closeButton}
+        onPress={() => setHelpVisible(false)}
+      >
+        <Text style={styles.closeButtonText}>Close</Text>
+      </TouchableOpacity>
+    </View>
+  </View>
+</Modal>
     </SafeAreaView>
   );
 };
@@ -258,15 +283,14 @@ const styles = StyleSheet.create({
 
   },
   settingsIcon: {
-  width: 30,
-  height: 30,
-  resizeMode: 'contain',
+  width: 60,
+  height: 50,
 },
 
 settingsButton: {
   position: 'absolute',
-  top: 70,
-  right: 40,
+  top: 60,
+  right: 30,
 
 },
   questionIcon: {
@@ -401,4 +425,41 @@ questionButton: {
     fontWeight: '600',
     fontSize: 14,
   },
+
+  modalOverlay: {
+  flex: 1,
+  backgroundColor: 'rgba(0,0,0,0.5)',
+  justifyContent: 'center',
+  alignItems: 'center',
+},
+
+modalContent: {
+  width: '85%',
+  backgroundColor: 'white',
+  borderRadius: 20,
+  padding: 20,
+},
+
+modalTitle: {
+  fontSize: 22,
+  fontWeight: 'bold',
+  marginBottom: 12,
+  alignSelf: 'center',
+},
+
+modalText: {
+  alignSelf: 'center',
+  fontSize: 16,
+  lineHeight: 24,
+},
+
+closeButton: {
+  marginTop: 20,
+  alignSelf: 'center',
+},
+
+closeButtonText: {
+  fontSize: 16,
+  fontWeight: 'bold',
+},
 });
