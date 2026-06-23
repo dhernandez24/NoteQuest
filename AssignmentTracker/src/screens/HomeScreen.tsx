@@ -9,7 +9,7 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-
+ 
 import { Assignment } from '../types';
 import { mockUser } from '../data/mockData';
 import { AssignmentCard, UserCard, FloatingButton } from '../components';
@@ -68,7 +68,13 @@ export const HomeScreen: React.FC = () => {
       navigation.navigate('AddAssignment', { assignmentId: id });
     }
   };
+    const handleQuestionPress = () => {
+  console.log('Help button pressed');
+};
 
+const handleSettingsPress = () => {
+  navigation.navigate('Settings');
+};
   const handleSelect = (id: string) => {
     setSelectedIds((prev) => {
       const next = new Set(prev);
@@ -103,14 +109,28 @@ export const HomeScreen: React.FC = () => {
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
       <View style={styles.header}>
+        <TouchableOpacity 
+          style={styles.questionButton}
+        onPress={handleQuestionPress}>
+        <Image
+          source={require('../../assets/question_mark.png')}
+          style={styles.questionIcon}
+        />
+        </TouchableOpacity>
+         
+
       <Image
         source={require('../../assets/NoteQuest2.png')}
         style={styles.logo}
       />
-         <Image
-        source={require('../../assets/settings.png')}
-        style={styles.settingsIcon}
-      />
+    <TouchableOpacity
+    style={styles.settingsButton}
+     onPress={handleSettingsPress}>
+    <Image
+      source={require('../../assets/settings.png')}
+      style={styles.settingsIcon}
+    />
+  </TouchableOpacity>
          
         </View>
          <Text style={styles.date}>{formatFullDate(new Date())}</Text>
@@ -186,9 +206,7 @@ export const HomeScreen: React.FC = () => {
 
       {selectionMode && (
         <View style={styles.selectionBar}>
-          <Text style={styles.selectionCount}>
-            {hasSelected ? `${selectedIds.size} selected` : 'Select assignments'}
-          </Text>
+          
           <TouchableOpacity
             style={[styles.completeButton, !hasSelected && styles.completeButtonDisabled]}
             onPress={handleMarkComplete}
@@ -240,12 +258,29 @@ const styles = StyleSheet.create({
 
   },
   settingsIcon: {
-    width: 70,
-    height: 50,
-    position: 'absolute',
-    top: 60,
-    right: 20,
-  },
+  width: 30,
+  height: 30,
+  resizeMode: 'contain',
+},
+
+settingsButton: {
+  position: 'absolute',
+  top: 70,
+  right: 40,
+
+},
+  questionIcon: {
+  width: 30,
+  height: 30,
+  resizeMode: 'contain',
+},
+
+questionButton: {
+  position: 'absolute',
+  top: 70,
+  left: 40,
+
+},
 
   addbutton: {
     marginBottom: 24,
@@ -337,36 +372,30 @@ const styles = StyleSheet.create({
   },
   selectionBar: {
     position: 'absolute',
-    bottom: 10,
-    left: 100,
-    right: 20,
+    bottom: 100,
+    right: 25,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    backgroundColor: colors.surface,
+    backgroundColor: '#306bac',
     borderRadius: 20,
-    paddingVertical: 14,
-    paddingHorizontal: 20,
-    elevation: 8,
+    paddingVertical: 20,
+    paddingHorizontal: 15,
+
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.15,
     shadowRadius: 12,
+     
   },
   selectionCount: {
     fontSize: 14,
     fontWeight: '500',
     color: colors.textSecondary,
+     
   },
-  completeButton: {
-    backgroundColor: colors.primary,
-    borderRadius: 12,
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-  },
-  completeButtonDisabled: {
-    backgroundColor: colors.border,
-  },
+ 
+  
   completeButtonText: {
     color: colors.surface,
     fontWeight: '600',
