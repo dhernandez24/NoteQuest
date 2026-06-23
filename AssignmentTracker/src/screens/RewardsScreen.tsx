@@ -80,9 +80,7 @@ export const RewardsScreen: React.FC = () => {
         contentContainerStyle={styles.content}
         showsVerticalScrollIndicator={false}
       >
-        <View style={styles.header}>
-          <Text style={styles.title}>Rewards</Text>
-        </View>
+        
 
         <View style={styles.balanceCard}>
           <View style={styles.balanceContent}>
@@ -171,7 +169,8 @@ const styles = StyleSheet.create({
     backgroundColor: colors.primary,
     borderRadius: 24,
     padding: 24,
-    marginBottom: 24,
+    marginBottom: 20,
+    
     overflow: 'hidden',
     position: 'relative',
   },
@@ -187,10 +186,15 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
   },
+  
+
   coinIcon: {
-    fontSize: 32,
-    marginRight: 8,
-  },
+  width: 70,
+  height: 70,
+  marginRight: -10,
+  marginLeft: -20,
+  resizeMode: 'contain',
+},
   balanceAmount: {
     fontSize: 40,
     fontWeight: '700',

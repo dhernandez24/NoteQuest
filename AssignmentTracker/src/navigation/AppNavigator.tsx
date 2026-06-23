@@ -49,6 +49,19 @@ const Tabs: React.FC = () => (
     ),
   }}
 />
+ <Tab.Screen
+  name="Rewards"
+  component={RewardsScreen}
+  options={{
+    tabBarIcon: ({ focused }) => (
+      <TabIcon
+        label="Games"
+        focused={focused}
+        icon={require('../../assets/gameIcon.png')}
+      />
+    ),
+  }}
+/>
   <Tab.Screen
   name="Calendar"
   component={CalendarScreen}
@@ -64,19 +77,7 @@ const Tabs: React.FC = () => (
 />
 
 
-    <Tab.Screen
-  name="Rewards"
-  component={RewardsScreen}
-  options={{
-    tabBarIcon: ({ focused }) => (
-      <TabIcon
-        label="Rewards"
-        focused={focused}
-        icon={require('../../assets/gameIcon.png')}
-      />
-    ),
-  }}
-/>
+   
     
     
   </Tab.Navigator>
@@ -111,24 +112,30 @@ const styles = StyleSheet.create({
   },
   tabIconContainer: {
     
-    flexDirection: 'column',
-    alignItems: 'center',
-    justifyContent: 'center', 
+    flex: 1,
+  justifyContent: 'center',
+  alignItems: 'center',
+  width: 100,
+  marginTop: 10,
+   
+
 
   },
   tabIcon: {
     fontSize: 24,
-
+    alignSelf: 'center',
   
     opacity: 0.5,
-    alignSelf: 'center',
+
   },
   tabIconFocused: {
     opacity: 1,
     tintColor: colors.primary,
+  
   },
   tabLabel: {
      fontSize: 11,
+     marginTop: -6,
    
 
   fontWeight: '500',

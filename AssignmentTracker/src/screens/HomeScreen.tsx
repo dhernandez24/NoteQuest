@@ -154,7 +154,7 @@ const handleSettingsPress = () => {
         <View style={styles.section}>
           <View style={styles.sectionHeaderRow}>
            
-            <Text style={styles.sectionTitle}>Upcoming Assignments</Text>
+            <Text style={styles.sectionTitle}>Assignments</Text>
             <View style={styles.sectionActions}>
               <TouchableOpacity style={styles.completedCta} onPress={handleViewCompleted}>
                 <Text style={styles.completedCtaText}>Completed</Text>
