@@ -131,7 +131,10 @@ export const RewardsScreen: React.FC = () => {
                   {item.description}
                 </Text>
                 <View style={[styles.costBadge, !canAfford && styles.costBadgeDisabled]}>
-                  <Text style={styles.costIcon}>🪙</Text>
+                  <Image
+                      source={require('../../assets/coin.png')}
+                      style={styles.coinIcon}
+                    />
                   <Text style={[styles.costAmount, !canAfford && styles.costAmountDisabled]}>
                     {item.cost}
                   </Text>
@@ -247,6 +250,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.surface,
     borderRadius: 16,
     padding: 16,
+    marginBottom: 12,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.05,
@@ -259,7 +263,7 @@ const styles = StyleSheet.create({
   rewardIcon: {
     width: 48,
     height: 48,
-    borderRadius: 12,
+    borderRadius: 9,
     backgroundColor: colors.background,
     justifyContent: 'center',
     alignItems: 'center',
@@ -284,13 +288,14 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     alignSelf: 'flex-start',
-    backgroundColor: colors.secondary + '20',
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-    borderRadius: 12,
+    marginTop: -15,
+
+
+
+  
   },
   costBadgeDisabled: {
-    backgroundColor: colors.border,
+  
   },
   costIcon: {
     fontSize: 14,
