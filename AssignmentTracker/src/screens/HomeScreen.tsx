@@ -344,12 +344,12 @@ questionButton: {
     paddingVertical: 6,
     paddingHorizontal: 12,
     borderRadius: 16,
-    backgroundColor: colors.success + '15',
+    backgroundColor: colors.accentPink + '15',
   },
   completedCtaText: {
     fontSize: 13,
     fontWeight: '500',
-    color: colors.success,
+    color: colors.accentPink,
   },
   selectButton: {
     paddingVertical: 6,

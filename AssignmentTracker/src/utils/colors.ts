@@ -5,7 +5,7 @@ export const colors = {
   background: '#f8f4ec',
   surface: '#FFFFFF',
   text: '#1E293B',
-  textSecondary: '#64748B',
+  textSecondary: '#1e2733',
   textLight: '#94A3B8',
   border: '#E2E8F0',
   success: '#06a77d',
@@ -14,6 +14,6 @@ export const colors = {
   homework: '#ffb703',
   test: '#219ebc',
   task: '#03045e',
-  other: '#b95f89',
+  other: '#c715868c',
   accentPink: '#F472B6',
 };

@@ -161,9 +161,11 @@ const styles = StyleSheet.create({
     paddingBottom: 100,
   },
   header: {
+
     marginBottom: 20,
   },
   title: {
+    alignSelf: 'center',
     fontSize: 28,
     fontWeight: '700',
     color: colors.text,
@@ -173,7 +175,7 @@ const styles = StyleSheet.create({
     borderRadius: 24,
     padding: 24,
     marginBottom: 20,
-    
+    alignItems: 'center',
     overflow: 'hidden',
     position: 'relative',
   },
@@ -181,22 +183,23 @@ const styles = StyleSheet.create({
     zIndex: 1,
   },
   balanceLabel: {
-    fontSize: 14,
+    fontSize: 25,
     color: colors.surface + 'CC',
-    marginBottom: 4,
+
   },
   balanceRow: {
     flexDirection: 'row',
     alignItems: 'center',
+    
   },
   
 
   coinIcon: {
   width: 70,
   height: 70,
-  marginRight: -10,
+  
   marginLeft: -20,
-  resizeMode: 'contain',
+ 
 },
   balanceAmount: {
     fontSize: 40,
@@ -247,7 +250,7 @@ const styles = StyleSheet.create({
   },
   rewardCard: {
     width: '47%',
-    backgroundColor: colors.surface,
+    backgroundColor: colors.warning,
     borderRadius: 16,
     padding: 16,
     marginBottom: 12,
@@ -289,8 +292,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     alignSelf: 'flex-start',
     marginTop: -15,
-
-
+  
 
   
   },
@@ -304,7 +306,8 @@ const styles = StyleSheet.create({
   costAmount: {
     fontSize: 14,
     fontWeight: '600',
-    color: colors.secondary,
+    color: colors.text,
+     
   },
   costAmountDisabled: {
     color: colors.textSecondary,
