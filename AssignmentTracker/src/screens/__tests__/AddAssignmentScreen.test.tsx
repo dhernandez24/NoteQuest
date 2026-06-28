@@ -33,8 +33,6 @@ describe('AddAssignmentScreen', () => {
     const { getByPlaceholderText, getByText } = render(<AddAssignmentScreen />);
 
     fireEvent.changeText(getByPlaceholderText(/add title/i), 'Math Homework');
-    fireEvent.changeText(getByPlaceholderText(/minutes/i), '90');
-
     fireEvent.press(getByText(/^add$/i));
 
     await waitFor(() => {

@@ -38,19 +38,7 @@ const Tabs: React.FC = () => (
   >
 
 
-    <Tab.Screen
-  name="Rewards"
-  component={RewardsScreen}
-  options={{
-    tabBarIcon: ({ focused }) => (
-      <TabIcon
-        label="Games"
-        focused={focused}
-        icon={require('../../assets/gameIcon.png')}
-      />
-    ),
-  }}
-/>
+   
     <Tab.Screen
   name="Home"
   component={HomeScreen}
@@ -64,7 +52,19 @@ const Tabs: React.FC = () => (
     ),
   }}
 />
- 
+  <Tab.Screen
+  name="Rewards"
+  component={RewardsScreen}
+  options={{
+    tabBarIcon: ({ focused }) => (
+      <TabIcon
+        label="Games"
+        focused={focused}
+        icon={require('../../assets/gameIcon.png')}
+      />
+    ),
+  }}
+/>
   <Tab.Screen
   name="Calendar"
   component={CalendarScreen}

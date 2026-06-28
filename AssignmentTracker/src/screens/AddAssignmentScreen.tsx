@@ -13,6 +13,7 @@ import { colors } from '../utils/colors';
 import { useAssignmentsStore } from '../store/AssignmentsStore';
 import { AssignmentType, Assignment } from '../types';
 import { useNavigation, useRoute } from '@react-navigation/native';
+import { DurationPicker } from '../components';
 
 const TYPE_OPTIONS: AssignmentType[] = ['homework', 'test', 'task', 'other'];
 
@@ -23,7 +24,7 @@ export const AddAssignmentScreen: React.FC = () => {
 
   const [title, setTitle] = useState('');
   const [selectedType, setSelectedType] = useState<AssignmentType>('homework');
-  const [duration, setDuration] = useState<string>('60');
+  const [duration, setDuration] = useState<number>(60);
   const [deadlineDate, setDeadlineDate] = useState<string>('');
   const [deadlineTime, setDeadlineTime] = useState<string>('3:00 PM');
   const [description, setDescription] = useState('');
@@ -44,7 +45,7 @@ export const AddAssignmentScreen: React.FC = () => {
         if (assignment) {
           setTitle(assignment.title);
           setSelectedType(assignment.type);
-          setDuration(assignment.duration.toString());
+          setDuration(assignment.duration);
           // Format deadline date and time
           const deadline = assignment.deadline;
           setDeadlineDate(deadline.toLocaleDateString('en-CA')); // YYYY-MM-DD
@@ -71,7 +72,7 @@ export const AddAssignmentScreen: React.FC = () => {
       const assignmentData = {
         title: title.trim(),
         type: selectedType,
-        duration: parseInt(duration, 10) || 60,
+        duration: duration || 60,
         deadline,
         description: description.trim(),
       };
@@ -188,14 +189,7 @@ export const AddAssignmentScreen: React.FC = () => {
 
         <View style={styles.card}>
           <Text style={styles.label}>length of assignment</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="minutes"
-            placeholderTextColor={colors.textLight}
-            keyboardType="numeric"
-            value={duration}
-            onChangeText={setDuration}
-          />
+          <DurationPicker value={duration} onChange={setDuration} />
         </View>
 
         <View style={styles.card}>

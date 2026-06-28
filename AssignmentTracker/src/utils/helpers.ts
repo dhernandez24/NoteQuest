@@ -61,10 +61,9 @@ export const getTypeLabel = (type: AssignmentType): string => {
 };
 
 export const formatDuration = (minutes: number): string => {
-  if (minutes < 60) {
-    return `${minutes}min`;
-  }
-  const hours = Math.floor(minutes / 60);
-  const mins = minutes % 60;
-  return mins > 0 ? `${hours}h ${mins}min` : `${hours}h`;
+  const h = Math.floor(minutes / 60);
+  const m = minutes % 60;
+  if (h === 0) return `${m} min`;
+  if (m === 0) return h === 1 ? '1 hr' : `${h} hrs`;
+  return h === 1 ? `1 hr ${m} min` : `${h} hrs ${m} min`;
 };
