@@ -49,7 +49,11 @@ export const AssignmentCard: React.FC<AssignmentCardProps> = ({
         </View>
         <View style={styles.meta}>
           <View style={[styles.typeTag, { backgroundColor: typeColor + '15' }]}>
-            <Text style={[styles.typeText, { color: typeColor }]}>{getTypeLabel(assignment.type)}</Text>
+            <Text style={[styles.typeText, { color: typeColor }]}>
+  {assignment.type === 'other'
+    ? assignment.customType
+    : getTypeLabel(assignment.type)}
+</Text>
           </View>
           <Text style={styles.duration}>{formatDuration(assignment.duration)}</Text>
         </View>

@@ -53,6 +53,7 @@ export const useAssignmentsStore = create<AssignmentsStore>((set, get) => ({
       id: generateId(),
       title: assignment.title,
       type: assignment.type,
+      customType: assignment.customType,
       duration: assignment.duration,
       deadline: assignment.deadline,
       description: assignment.description || '',

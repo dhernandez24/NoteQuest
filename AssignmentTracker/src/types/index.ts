@@ -4,6 +4,7 @@ export interface Assignment {
   id: string;
   title: string;
   type: AssignmentType;
+   customType?: string;
   duration: number;
   deadline: Date;
   description: string;

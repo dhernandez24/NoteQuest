@@ -7,6 +7,7 @@ import {
   TextInput,
   TouchableOpacity,
   Alert,
+
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { colors } from '../utils/colors';
@@ -16,6 +17,9 @@ import { useNavigation, useRoute } from '@react-navigation/native';
 import { DurationPicker } from '../components';
 
 const TYPE_OPTIONS: AssignmentType[] = ['homework', 'test', 'task', 'other'];
+
+
+
 
 export const AddAssignmentScreen: React.FC = () => {
   const navigation = useNavigation() as any;
@@ -35,6 +39,8 @@ export const AddAssignmentScreen: React.FC = () => {
   const updateAssignmentStore = assignmentsStore.updateAssignment;
   const loadAssignments = assignmentsStore.loadAssignments;
 
+  const [customType, setCustomType] = useState('');
+
   // Load assignment if editing
   useEffect(() => {
     if (assignmentId) {
@@ -45,6 +51,7 @@ export const AddAssignmentScreen: React.FC = () => {
         if (assignment) {
           setTitle(assignment.title);
           setSelectedType(assignment.type);
+          setCustomType(assignment.customType ?? '');
           setDuration(assignment.duration);
           // Format deadline date and time
           const deadline = assignment.deadline;
@@ -72,6 +79,7 @@ export const AddAssignmentScreen: React.FC = () => {
       const assignmentData = {
         title: title.trim(),
         type: selectedType,
+        customType: customType.trim(),
         duration: duration || 60,
         deadline,
         description: description.trim(),
@@ -85,6 +93,7 @@ export const AddAssignmentScreen: React.FC = () => {
             id: assignmentId,
             title: assignmentData.title,
             type: assignmentData.type,
+            customType: assignmentData.customType,
             duration: assignmentData.duration,
             deadline: assignmentData.deadline,
             description: assignmentData.description,
@@ -132,7 +141,7 @@ export const AddAssignmentScreen: React.FC = () => {
 
       <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
         <View style={styles.card}>
-          <Text style={styles.label}>title:</Text>
+          <Text style={styles.label}>Title:</Text>
           <TextInput
             style={styles.input}
             placeholder="add title"
@@ -143,7 +152,7 @@ export const AddAssignmentScreen: React.FC = () => {
         </View>
 
         <View style={styles.card}>
-          <Text style={styles.label}>add deadline</Text>
+          <Text style={styles.label}>Add Deadline</Text>
           <View style={styles.row}>
             <TextInput
               style={[styles.input, styles.flexHalf]}
@@ -163,37 +172,47 @@ export const AddAssignmentScreen: React.FC = () => {
         </View>
 
         <View style={styles.card}>
-          <Text style={styles.label}>type of assignment</Text>
+          <Text style={styles.label}>Type of Assignment</Text>
           <View style={styles.typeList}>
-            {TYPE_OPTIONS.map((t) => (
-              <TouchableOpacity
-                key={t}
-                style={[
-                  styles.typeOption,
-                  selectedType === t && styles.typeOptionSelected,
-                ]}
-                onPress={() => setSelectedType(t)}
-              >
-                <Text
-                  style={[
-                    styles.typeOptionText,
-                    selectedType === t && styles.typeOptionTextSelected,
-                  ]}
-                >
-                  {t}
-                </Text>
-              </TouchableOpacity>
-            ))}
-          </View>
-        </View>
+  {TYPE_OPTIONS.map((t) => (
+    <TouchableOpacity
+      key={t}
+      style={[
+        styles.typeOption,
+        selectedType === t && styles.typeOptionSelected,
+      ]}
+      onPress={() => setSelectedType(t)}
+    >
+      <Text
+        style={[
+          styles.typeOptionText,
+          selectedType === t && styles.typeOptionTextSelected,
+        ]}
+      >
+        {t}
+      </Text>
+    </TouchableOpacity>
+  ))}
+</View>
+        {selectedType === 'other' && (
+    <TextInput
+      value={customType}
+       onChangeText={setCustomType}
+      style={[styles.input, { marginTop: 12 }]}
+      placeholder="Add Type.. 
+      
+      "
+    />
+  )}
+</View>
 
         <View style={styles.card}>
-          <Text style={styles.label}>length of assignment</Text>
+          <Text style={styles.label}>Length of Assignment</Text>
           <DurationPicker value={duration} onChange={setDuration} />
         </View>
 
         <View style={styles.card}>
-          <Text style={styles.label}>add description</Text>
+          <Text style={styles.label}>Add Description</Text>
           <TextInput
             style={[styles.input, styles.multiline]}
             placeholder="description"
