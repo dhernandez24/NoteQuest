@@ -127,14 +127,12 @@ export const AddAssignmentScreen: React.FC = () => {
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
-          <TouchableOpacity
-           onPress={() => navigation.goBack()}
+        <TouchableOpacity onPress={() => navigation.goBack()}
           style={styles.backButton} >
             <Text style={styles.backButtonText}>←</Text>
           </TouchableOpacity>
-        </TouchableOpacity>
-        <Text style={styles.title}>{assignmentId ? 'edit assignment' : 'adding assignment'}</Text>
+        
+        <Text style={styles.title}>{assignmentId ? 'edit assignment' : 'Add an Assignment'}</Text>
         <View style={{ width: 30 }} />
         
       </View>
@@ -247,23 +245,35 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: 16,
-    paddingHorizontal: 12,
+    paddingVertical:25,
+    paddingHorizontal: 15,
     backgroundColor: colors.surface,
     borderBottomWidth: 1,
     borderBottomColor: colors.border,
   },
 backButton: {
   position: 'absolute',
-  left: 12,
-  paddingHorizontal: 10,
+      left: 20,
+      paddingHorizontal: 15,
+      paddingVertical: 10,
+  backgroundColor: colors.primary,
+  borderRadius: 180,
+
+  shadowColor: '#000',
+  shadowOffset: {
+    width: 0,
+    height: 6,
+  },
+  shadowOpacity: 0.25,
+  shadowRadius: 10,
+  elevation: 8,
 
 },
 
 backButtonText: {
-  fontSize: 28,
-  color: colors.text,
-  fontWeight: '300',
+  fontSize: 25,
+  color: 'white',
+  fontWeight: '600',
 },
   title: { 
     fontSize: 20, 
