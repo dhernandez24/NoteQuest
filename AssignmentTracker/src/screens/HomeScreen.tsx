@@ -276,7 +276,14 @@ const styles = StyleSheet.create({
   borderRightWidth: 10,
   borderLeftWidth: 10,
   borderBottomColor: '#6F9CEB',
-
+shadowColor: '#000',
+shadowOffset: {
+  width: 0,
+  height: 6,
+},
+shadowOpacity: 0.25,
+shadowRadius: 10,
+elevation: 8,
   marginHorizontal: -20,
 
   borderBottomLeftRadius: 60,
@@ -349,7 +356,14 @@ questionButton: {
     alignSelf: 'flex-start',
     marginBottom: 16,
     marginLeft : -60,
- 
+ shadowColor: '#000',
+shadowOffset: {
+  width: 0,
+  height: 6,
+},
+shadowOpacity: 0.25,
+shadowRadius: 10,
+elevation: 8,
    
   },
   sectionTitleText: {
@@ -401,6 +415,14 @@ questionButton: {
     marginBottom: 12,
     alignSelf: 'flex-end',
     letterSpacing: 0.5,
+    shadowColor: '#000',
+shadowOffset: {
+  width: 0,
+  height: 6,
+},
+shadowOpacity: 0.25,
+shadowRadius: 10,
+elevation: 8,
   },
   dayHeaderText: {
     fontSize: 14,
