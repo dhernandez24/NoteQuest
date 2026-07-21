@@ -77,10 +77,12 @@ const styles = StyleSheet.create({
     shadowRadius: 8,
     elevation: 2,
     overflow: 'hidden',
+    
   },
   selectedContainer: {
     borderColor: colors.primary,
     borderWidth: 2,
+    
   },
   checkbox: {
     width: 28,
@@ -108,19 +110,21 @@ const styles = StyleSheet.create({
   content: {
     flex: 1,
     padding: 16,
+    marginTop: -7,
   },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 8,
+   
+
   },
   title: {
-    fontSize: 16,
+    fontSize: 17,
     fontWeight: '600',
     color: colors.text,
     flex: 1,
-    marginRight: 8,
+
   },
   meta: {
     flexDirection: 'row',
@@ -143,6 +147,8 @@ const styles = StyleSheet.create({
   },
   deadline: {
     fontSize: 13,
-    color: colors.textLight,
+
+    color: 'ffff' + '40',
+    
   },
 });

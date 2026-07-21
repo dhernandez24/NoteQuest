@@ -325,7 +325,7 @@ questionButton: {
 
   addbutton: {
     marginBottom: 24,
-    marginTop: 20,
+    marginTop: 4,
 
   },
  
@@ -346,15 +346,15 @@ questionButton: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 16,
+    marginBottom: 10,
   },
   sectionTitle: {
     backgroundColor: colors.primary,
     paddingVertical: 8,
     paddingHorizontal: 45,
     borderRadius: 16,
-    alignSelf: 'flex-start',
-    marginBottom: 16,
+   
+
     marginLeft : -60,
  shadowColor: '#000',
 shadowOffset: {
@@ -401,18 +401,19 @@ elevation: 8,
     color: colors.primary,
   },
   dayGroup: {
-    marginBottom: 16,
+    marginBottom: 5,
   },
   dayHeader: {
 
     backgroundColor: '#141B41',
-    paddingVertical: 6,
-    paddingHorizontal:60,
+    paddingVertical: 5,
+
     borderRadius: 16,
-    alignSelf: 'flex-start',
-    marginBottom: 16,
-    marginRight : -30,
+   
     marginBottom: 12,
+    marginRight : -30,
+
+   
     alignSelf: 'flex-end',
     letterSpacing: 0.5,
     shadowColor: '#000',
@@ -426,9 +427,12 @@ elevation: 8,
   },
   dayHeaderText: {
     fontSize: 14,
-    marginLeft: -30,
+    marginLeft: -80,
+    
     fontWeight: '500',
     color: 'white',
+    paddingHorizontal: 90,
+    letterSpacing: 0.3,
   },
   emptyState: {
     alignItems: 'center',

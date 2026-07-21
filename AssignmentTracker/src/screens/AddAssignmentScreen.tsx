@@ -368,15 +368,18 @@ backButtonText: {
     fontSize: 14, 
     color: colors.textSecondary, 
     marginBottom: 8,
+   
   },
   input: { 
     backgroundColor: colors.background, 
     borderRadius: 12, 
     padding: 12, 
     fontSize: 16, 
-    borderWidth: 1, 
-    borderColor: colors.border,
-    color: colors.text,
+    marginBottom: 8,
+  
+   
+
+
   },
   multiline: { 
     height: 100, 
@@ -388,7 +391,7 @@ backButtonText: {
   },
   flexHalf: { 
     flex: 1,
-    marginRight: -400,
+
     
   },
   typeList: { 

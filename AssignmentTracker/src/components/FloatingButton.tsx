@@ -20,8 +20,8 @@ export const FloatingButton: React.FC<FloatingButtonProps> = ({ onPress }) => {
 const styles = StyleSheet.create({
   button: {
     alignSelf: 'center',
-    width: 170,
-    height: 170,
+    width: 160,
+    height: 160,
     borderRadius: 100,
     backgroundColor: '#6F9CEB',
     justifyContent: 'center',

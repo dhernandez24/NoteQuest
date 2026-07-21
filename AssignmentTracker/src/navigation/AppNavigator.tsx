@@ -99,8 +99,8 @@ export const AppNavigator: React.FC = () => {
 const styles = StyleSheet.create({
   tabBar: {
    
-    bottom: 50,
-    width: '90%',
+    bottom: 40,
+    width: '80%',
     alignSelf: 'center',
     height: 70,
     backgroundColor: colors.surface,
