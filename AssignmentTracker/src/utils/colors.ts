@@ -9,7 +9,7 @@ export const colors = {
   textLight: '#94A3B8',
   border: '#E2E8F0',
   success: '#06a77d',
-  warning: '#ffad69',
+  warning: '#a8a5c0',
   error: '#cb1b16',
   homework: '#ffb703',
   test: '#219ebc',

@@ -153,8 +153,12 @@ const handleSettingsPress = () => {
 
         <View style={styles.section}>
           <View style={styles.sectionHeaderRow}>
-           
-            <Text style={styles.sectionTitle}>Assignments</Text>
+            <View style={styles.sectionTitle}>
+              <Text style={styles.sectionTitleText}>Assignments</Text>
+            </View>
+          
+       
+    
             <View style={styles.sectionActions}>
               <TouchableOpacity style={styles.completedCta} onPress={handleViewCompleted}>
                 <Text style={styles.completedCtaText}>Completed</Text>
@@ -170,23 +174,29 @@ const handleSettingsPress = () => {
                   {selectionMode ? 'Cancel' : 'Select'}
                 </Text>
               </TouchableOpacity>
+
             </View>
           </View>
           {sortedDates.length === 0 ? (
             <View style={styles.emptyState}>
     
-              <Text style={styles.emptyTitle}>No assignments yet</Text>
+              <Text style={styles.emptyTitle}>No assignments/tasks yet</Text>
               <Text style={styles.emptyText}>
-                Tap the + button to add your first assignment
+                Tap the + button to add one
               </Text>
             </View>
+   
           ) : (
             sortedDates.map((dateKey) => {
               const date = new Date(dateKey);
               const dayAssignments = groupedAssignments[dateKey];
               return (
                 <View key={dateKey} style={styles.dayGroup}>
-                  <Text style={styles.dayHeader}>{getDayName(date)}</Text>
+                  <View style={styles.dayHeader}>
+                    <Text style={styles.dayHeaderText}>{getDayName(date)}</Text>
+                  </View>
+
+                  
                   {dayAssignments.map((assignment) => (
                     <AssignmentCard
                       key={assignment.id}
@@ -332,10 +342,24 @@ questionButton: {
     marginBottom: 16,
   },
   sectionTitle: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: colors.text,
+    backgroundColor: colors.primary,
+    paddingVertical: 8,
+    paddingHorizontal: 45,
+    borderRadius: 16,
+    alignSelf: 'flex-start',
+    marginBottom: 16,
+    marginLeft : -60,
+ 
+   
   },
+  sectionTitleText: {
+    fontSize: 17,
+    fontWeight: '500',
+    color: 'white',
+    marginLeft: 25,
+
+  },
+
   sectionActions: {
     flexDirection: 'row',
     gap: 8,
@@ -366,12 +390,23 @@ questionButton: {
     marginBottom: 16,
   },
   dayHeader: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: colors.textSecondary,
+
+    backgroundColor: '#141B41',
+    paddingVertical: 6,
+    paddingHorizontal:60,
+    borderRadius: 16,
+    alignSelf: 'flex-start',
+    marginBottom: 16,
+    marginRight : -30,
     marginBottom: 12,
-    textTransform: 'uppercase',
+    alignSelf: 'flex-end',
     letterSpacing: 0.5,
+  },
+  dayHeaderText: {
+    fontSize: 14,
+    marginLeft: -30,
+    fontWeight: '500',
+    color: 'white',
   },
   emptyState: {
     alignItems: 'center',

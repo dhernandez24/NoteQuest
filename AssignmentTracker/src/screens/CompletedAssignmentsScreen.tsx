@@ -19,7 +19,7 @@ export const CompletedAssignmentsScreen: React.FC = () => {
   const { assignments, loadAssignments, deleteAssignment } = useAssignmentsStore();
 
   useEffect(() => {
-    loadAssignments();a
+    loadAssignments();
   }, []);
 
   const completedAssignments = assignments.filter((a) => a.status === 'completed');
