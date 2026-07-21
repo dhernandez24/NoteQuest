@@ -15,6 +15,7 @@ import { useAssignmentsStore } from '../store/AssignmentsStore';
 import { AssignmentType, Assignment } from '../types';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { DurationPicker } from '../components';
+import DateTimePicker from '@react-native-community/datetimepicker';
 
 const TYPE_OPTIONS: AssignmentType[] = ['homework', 'test', 'task', 'other'];
 
@@ -29,8 +30,13 @@ export const AddAssignmentScreen: React.FC = () => {
   const [title, setTitle] = useState('');
   const [selectedType, setSelectedType] = useState<AssignmentType>('homework');
   const [duration, setDuration] = useState<number>(60);
-  const [deadlineDate, setDeadlineDate] = useState<string>('');
-  const [deadlineTime, setDeadlineTime] = useState<string>('3:00 PM');
+
+//adding from the expo documentation for date and time picker
+//https://github.com/react-native-datetimepicker/datetimepicker#component-props--params-of-the-android-imperative-api
+  const [deadline, setDeadline] = useState(new Date());
+const [showDatePicker, setShowDatePicker] = useState(false);
+const [showTimePicker, setShowTimePicker] = useState(false);
+
   const [description, setDescription] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
@@ -53,10 +59,10 @@ export const AddAssignmentScreen: React.FC = () => {
           setSelectedType(assignment.type);
           setCustomType(assignment.customType ?? '');
           setDuration(assignment.duration);
-          // Format deadline date and time
-          const deadline = assignment.deadline;
-          setDeadlineDate(deadline.toLocaleDateString('en-CA')); // YYYY-MM-DD
-          setDeadlineTime(deadline.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true }));
+        
+           setDeadline(assignment.deadline);
+
+        setDescription(assignment.description ?? '');
           setDescription(assignment.description ?? '');
         }
         setIsLoading(false);
@@ -72,10 +78,7 @@ export const AddAssignmentScreen: React.FC = () => {
 
     setIsLoading(true);
     try {
-      const deadline = deadlineDate
-        ? new Date(`${deadlineDate} ${deadlineTime}`)
-        : new Date(Date.now() + 24 * 60 * 60 * 1000);
-
+      
       const assignmentData = {
         title: title.trim(),
         type: selectedType,
@@ -151,22 +154,41 @@ export const AddAssignmentScreen: React.FC = () => {
 
         <View style={styles.card}>
           <Text style={styles.label}>Add Deadline</Text>
+
+
           <View style={styles.row}>
-            <TextInput
-              style={[styles.input, styles.flexHalf]}
-              placeholder="Date"
-              placeholderTextColor={colors.textLight}
-              value={deadlineDate}
-              onChangeText={setDeadlineDate}
-            />
-            <TextInput
-              style={[styles.input, styles.flexHalf]} 
-              placeholder="Time"
-              placeholderTextColor={colors.textLight}
-              value={deadlineTime}
-              onChangeText={setDeadlineTime}
-            />
-          </View>
+
+  <TouchableOpacity
+  style={[styles.input, styles.flexHalf]}
+  onPress={() => {
+    setShowTimePicker(false);
+    setShowDatePicker(true);
+  }}
+>
+  <Text>
+    {deadline.toLocaleDateString()}
+  </Text>
+</TouchableOpacity>
+
+
+<TouchableOpacity
+  style={[styles.input, styles.flexHalf]}
+  onPress={() => {
+    setShowDatePicker(false);
+    setShowTimePicker(true);
+  }}
+>
+    <Text>
+      {deadline.toLocaleTimeString([], {
+        hour: '2-digit',
+        minute: '2-digit',
+      })}
+    </Text>
+  </TouchableOpacity>
+
+</View>
+
+          
         </View>
 
         <View style={styles.card}>
@@ -220,28 +242,70 @@ export const AddAssignmentScreen: React.FC = () => {
             value={description}
             onChangeText={setDescription}
           />
-        </View>
 
-        {/* Save Button - matching prototype style */}
+          
+        </View>
+        
+        
         <TouchableOpacity 
           style={[styles.saveButton, isLoading && styles.saveButtonDisabled]} 
           onPress={saveAssignment}
           activeOpacity={0.85}
           disabled={isLoading}
         >
-          <Text style={styles.saveButtonText}>{assignmentId ? 'save' : 'add'}</Text>
+          <Text style={styles.saveButtonText}>{assignmentId ? 'save' : 'Add'}</Text>
         </TouchableOpacity>
+
+
       </ScrollView>
+        {showDatePicker && (
+    <DateTimePicker
+      value={deadline}
+      mode="date"
+      display="spinner"
+      onChange={(event, selectedDate) => {
+        setShowDatePicker(true);
+        setShowTimePicker(false);
+        if (selectedDate) {
+          setDeadline(selectedDate);
+        }
+      }}
+    />
+  )}
+
+  {showTimePicker && (
+    <DateTimePicker
+      value={deadline}
+      mode="time"
+      display="spinner"
+      onChange={(event, selectedTime) => {
+         setShowTimePicker(false);
+
+        if (selectedTime) {
+  const updated = new Date(deadline);
+
+  updated.setHours(
+    selectedTime.getHours(),
+    selectedTime.getMinutes()
+  );
+
+  setDeadline(updated);
+}
+      }}
+    />
+  )}
     </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
   container: { 
+    marginTop: -10,
     flex: 1, 
     backgroundColor: colors.background,
   },
   header: {
+
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
@@ -277,7 +341,7 @@ backButtonText: {
 },
   title: { 
     fontSize: 20, 
-    fontWeight: '600', 
+    fontWeight: '500', 
     color: colors.text, 
     marginBottom: 12,
     textTransform: 'none',
@@ -298,6 +362,7 @@ backButtonText: {
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.05,
     shadowRadius: 8,
+      
   },
   label: { 
     fontSize: 14, 
@@ -323,6 +388,8 @@ backButtonText: {
   },
   flexHalf: { 
     flex: 1,
+    marginRight: -400,
+    
   },
   typeList: { 
     flexDirection: 'row', 
@@ -350,24 +417,28 @@ backButtonText: {
     color: colors.surface,
   },
   saveButton: {
-    marginTop: 24,
-    backgroundColor: colors.accentPink || '#F472B6',
+
+    backgroundColor: colors.accentPink + '70',  
+    paddingHorizontal: 60,
     borderRadius: 30,
     paddingVertical: 14,
     alignItems: 'center',
-    justifyContent: 'center',
+    
     elevation: 6,
-    shadowColor: colors.accentPink || '#F472B6',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-  },
+ shadowOffset: {
+  width: 0,
+  height: 6,
+},
+shadowOpacity: 0.25,
+shadowRadius: 10,
+elevation: 8,},
   saveButtonDisabled: {
     backgroundColor: colors.border,
   },
   saveButtonText: {
-    color: colors.surface,
+
     fontSize: 16,
     fontWeight: '600',
+    color: 'white',
   },
 });

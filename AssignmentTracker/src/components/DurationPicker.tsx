@@ -178,7 +178,7 @@ export const DurationPicker: React.FC<DurationPickerProps> = ({ value, onChange 
 const styles = StyleSheet.create({
   trigger: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    justifyContent: 'cnet',
     alignItems: 'center',
     backgroundColor: colors.background,
     borderRadius: 12,
