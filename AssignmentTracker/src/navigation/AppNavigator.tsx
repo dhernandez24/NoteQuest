@@ -7,7 +7,7 @@ import { colors } from '../utils/colors';
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
-
+const SHOW_REWARDS = __DEV__; 
 import { ImageSourcePropType } from 'react-native';
 
 const TabIcon: React.FC<{
@@ -52,6 +52,7 @@ const Tabs: React.FC = () => (
     ),
   }}
 />
+  {SHOW_REWARDS && (
   <Tab.Screen
   name="Rewards"
   component={RewardsScreen}
@@ -65,6 +66,7 @@ const Tabs: React.FC = () => (
     ),
   }}
 />
+)}
   <Tab.Screen
   name="Calendar"
   component={CalendarScreen}

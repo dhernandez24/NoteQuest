@@ -30,6 +30,8 @@ export const AddAssignmentScreen: React.FC = () => {
   const [title, setTitle] = useState('');
   const [selectedType, setSelectedType] = useState<AssignmentType>('homework');
   const [duration, setDuration] = useState<number>(60);
+  const [hours, setHours] = useState('1');
+  const [minutes, setMinutes] = useState('0');
 
 //adding from the expo documentation for date and time picker
 //https://github.com/react-native-datetimepicker/datetimepicker#component-props--params-of-the-android-imperative-api
@@ -59,7 +61,9 @@ const [showTimePicker, setShowTimePicker] = useState(false);
           setSelectedType(assignment.type);
           setCustomType(assignment.customType ?? '');
           setDuration(assignment.duration);
-        
+          setHours(String(Math.floor(assignment.duration / 60)));
+          setMinutes(String(assignment.duration % 60));
+
            setDeadline(assignment.deadline);
 
         setDescription(assignment.description ?? '');
@@ -83,7 +87,7 @@ const [showTimePicker, setShowTimePicker] = useState(false);
         title: title.trim(),
         type: selectedType,
         customType: customType.trim(),
-        duration: duration || 60,
+        duration: (parseInt(hours, 10) || 0) * 60 + (parseInt(minutes, 10) || 0) || 60,
         deadline,
         description: description.trim(),
       };
@@ -128,18 +132,21 @@ const [showTimePicker, setShowTimePicker] = useState(false);
   }
 
   return (
-    <SafeAreaView style={styles.container} edges={['top']}>
+    <SafeAreaView style={styles.container}>
+
+  
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.goBack()}
           style={styles.backButton} >
             <Text style={styles.backButtonText}>←</Text>
           </TouchableOpacity>
         
-        <Text style={styles.title}>{assignmentId ? 'edit assignment' : 'Add an Assignment'}</Text>
-        <View style={{ width: 30 }} />
-        
-      </View>
-
+       
+        <View />
+         
+     
+      <Text style={styles.title}>{assignmentId ? 'Edit assignment' : 'Add Assignment'}</Text>
+ </View>
       <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
         <View style={styles.card}>
           <Text style={styles.label}>Title:</Text>
@@ -228,7 +235,30 @@ const [showTimePicker, setShowTimePicker] = useState(false);
 
         <View style={styles.card}>
           <Text style={styles.label}>Length of Assignment</Text>
-          <DurationPicker value={duration} onChange={setDuration} />
+          <View style={styles.row}>
+            <View style={styles.flexHalf}>
+              <TextInput
+                style={styles.input}
+                placeholder="0"
+                placeholderTextColor={colors.textLight}
+                keyboardType="number-pad"
+                value={hours}
+                onChangeText={setHours}
+              />
+              <Text style={styles.unitLabel}>hr</Text>
+            </View>
+            <View style={styles.flexHalf}>
+              <TextInput
+                style={styles.input}
+                placeholder="0"
+                placeholderTextColor={colors.textLight}
+                keyboardType="number-pad"
+                value={minutes}
+                onChangeText={setMinutes}
+              />
+              <Text style={styles.unitLabel}>min</Text>
+            </View>
+          </View>
         </View>
 
         <View style={styles.card}>
@@ -259,6 +289,7 @@ const [showTimePicker, setShowTimePicker] = useState(false);
 
       </ScrollView>
         {showDatePicker && (
+    <View style={{ alignItems: 'center' }}>
     <DateTimePicker
       value={deadline}
       mode="date"
@@ -271,9 +302,11 @@ const [showTimePicker, setShowTimePicker] = useState(false);
         }
       }}
     />
+    </View>
   )}
 
   {showTimePicker && (
+    <View style={{ alignItems: 'center' }}>
     <DateTimePicker
       value={deadline}
       mode="time"
@@ -293,7 +326,9 @@ const [showTimePicker, setShowTimePicker] = useState(false);
 }
       }}
     />
+    </View>
   )}
+ 
     </SafeAreaView>
   );
 };
@@ -303,25 +338,27 @@ const styles = StyleSheet.create({
     marginTop: -10,
     flex: 1, 
     backgroundColor: colors.background,
+   
   },
+
+
+
   header: {
 
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical:25,
+    
+   
+    paddingVertical:20,
     paddingHorizontal: 15,
-    backgroundColor: colors.surface,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.border,
+ marginBottom: -20,
+    
   },
 backButton: {
   position: 'absolute',
-      left: 20,
-      paddingHorizontal: 15,
+      left: 25,
+      paddingHorizontal: 13,
       paddingVertical: 10,
   backgroundColor: colors.primary,
-  borderRadius: 180,
+  borderRadius: 99999,
 
   shadowColor: '#000',
   shadowOffset: {
@@ -339,23 +376,29 @@ backButtonText: {
   color: 'white',
   fontWeight: '600',
 },
+
+
   title: { 
-    fontSize: 20, 
-    fontWeight: '500', 
-    color: colors.text, 
-    marginBottom: 12,
-    textTransform: 'none',
-    flex: 1,
-    textAlign: 'center',
+    fontSize: 24, 
+    alignSelf: 'center',
+    marginTop: 15,
+    fontWeight: '600',
+   marginBottom: -10,
+    color: colors.text,
+
+    
   },
   content: { 
-    padding: 20, 
-    paddingBottom: 100,
+    padding: 25, 
+
   },
   card: { 
     backgroundColor: colors.surface, 
+    borderWidth: 1,
+    borderColor: colors.border,
     borderRadius: 20, 
     padding: 18, 
+    
     marginBottom: 16,
     elevation: 2,
     shadowColor: '#000',
@@ -365,13 +408,20 @@ backButtonText: {
       
   },
   label: { 
-    fontSize: 14, 
+    fontSize: 16, 
     color: colors.textSecondary, 
-    marginBottom: 8,
-   
+    marginBottom: 10,
+    
+  },
+  unitLabel: {
+    fontSize: 13,
+    color: colors.textLight,
+    textAlign: 'center',
+    marginTop: 4,
+    fontWeight: '500',
   },
   input: { 
-    backgroundColor: colors.background, 
+    backgroundColor: '#134FAA' + 15,
     borderRadius: 12, 
     padding: 12, 
     fontSize: 16, 
@@ -403,7 +453,7 @@ backButtonText: {
     paddingVertical: 10, 
     paddingHorizontal: 16, 
     borderRadius: 9999, 
-    backgroundColor: colors.background, 
+    backgroundColor: '#134FAA' + 15,
     borderWidth: 1, 
     borderColor: colors.border,
   },
