@@ -10,11 +10,11 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { mockAssignments } from '../data/mockData';
 import { colors } from '../utils/colors';
 import { Assignment } from '../types';
-
+import { useNavigation, useRoute } from '@react-navigation/native'; 
 export const CalendarScreen: React.FC = () => {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
-
+   const navigation = useNavigation() as any;
   const getDaysInMonth = (date: Date) => {
     const year = date.getFullYear();
     const month = date.getMonth();
@@ -75,13 +75,17 @@ export const CalendarScreen: React.FC = () => {
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
       <View style={styles.header}>
-        <Text style={styles.title}>Calendar</Text>
+        <TouchableOpacity onPress={() => navigation.navigate('HomeScreen')}
+                  style={styles.backButton} >
+                    <Text style={styles.backButtonText}>x</Text>
+                  </TouchableOpacity>
+                
       </View>
 
       <View style={styles.calendarContainer}>
         <View style={styles.monthHeader}>
           <TouchableOpacity onPress={goToPrevMonth} style={styles.navButton}>
-            <Text style={styles.navButtonText}>‹</Text>
+            <Text style={styles.navButtonText}> ‹ </Text>
           </TouchableOpacity>
           <Text style={styles.monthTitle}>
             {monthNames[currentDate.getMonth()]} {currentDate.getFullYear()}
@@ -195,7 +199,7 @@ const styles = StyleSheet.create({
   },
   header: {
     padding: 20,
-    paddingBottom: 8,
+    paddingBottom: 50,
   },
   title: {
     fontSize: 28,
@@ -220,6 +224,36 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 16,
   },
+
+backButton: {
+  position: 'absolute',
+      left: 25,
+      paddingHorizontal: 15,
+      paddingVertical: 5,
+  backgroundColor: colors.primary,
+  borderRadius: 99999,
+
+  shadowColor: '#000',
+  shadowOffset: {
+    width: 0,
+    height: 6,
+  },
+  shadowOpacity: 0.25,
+  shadowRadius: 10,
+  elevation: 8,
+ 
+
+},
+
+backButtonText: {
+  fontSize: 30,
+  color: 'white',
+ 
+
+  
+},
+
+
   navButton: {
     width: 36,
     height: 36,

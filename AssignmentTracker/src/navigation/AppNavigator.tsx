@@ -71,6 +71,7 @@ const Tabs: React.FC = () => (
   name="Calendar"
   component={CalendarScreen}
   options={{
+     tabBarStyle: { display: 'none' },
     tabBarIcon: ({ focused }) => (
       <TabIcon
         label="Calendar"
