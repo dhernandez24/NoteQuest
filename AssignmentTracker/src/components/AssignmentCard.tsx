@@ -36,12 +36,13 @@ export const AssignmentCard: React.FC<AssignmentCardProps> = ({
       onPress={handlePress}
       activeOpacity={0.7}
     >
+      
+      <View style={[styles.typeIndicator, { backgroundColor: typeColor }]} />
       {selectionMode && (
         <View style={[styles.checkbox, selected && styles.checkboxSelected]}>
           {selected && <Text style={styles.checkmark}>✓</Text>}
         </View>
       )}
-      <View style={[styles.typeIndicator, { backgroundColor: typeColor }]} />
       <View style={styles.content}>
         <View style={styles.header}>
           <Text style={styles.title} numberOfLines={1}>{assignment.title}</Text>
@@ -102,6 +103,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     marginLeft: 12,
+    marginRight: 8,
     marginTop: 16,
   },
   checkboxSelected: {

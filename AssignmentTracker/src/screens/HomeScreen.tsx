@@ -463,7 +463,7 @@ elevation: 8,
     alignItems: 'center',
     justifyContent: 'space-between',
     backgroundColor: '#306bac',
-    borderRadius: 20,
+    borderRadius: 30,
     paddingVertical: 20,
     paddingHorizontal: 15,
 
