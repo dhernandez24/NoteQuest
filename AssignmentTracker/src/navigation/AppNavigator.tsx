@@ -7,7 +7,7 @@ import { colors } from '../utils/colors';
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
-const SHOW_REWARDS = __DEV__; 
+const SHOW_REWARDS = false; //__DEV__ = true
 import { ImageSourcePropType } from 'react-native';
 
 const TabIcon: React.FC<{

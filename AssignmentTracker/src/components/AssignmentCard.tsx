@@ -54,12 +54,21 @@ export const AssignmentCard: React.FC<AssignmentCardProps> = ({
     ? assignment.customType
     : getTypeLabel(assignment.type)}
 </Text>
+          
+          
           </View>
-          <Text style={styles.duration}>{formatDuration(assignment.duration)}</Text>
-        </View>
-        <Text style={styles.deadline}>
+           <Text style={styles.deadline}>
           Due {formatTime(assignment.deadline)}
         </Text>
+         
+        </View>
+        {assignment.description && (
+  <Text style={styles.description}>
+    {assignment.description}
+    
+  </Text>
+)}
+       
       </View>
     </TouchableOpacity>
   );
@@ -144,6 +153,11 @@ const styles = StyleSheet.create({
   duration: {
     fontSize: 13,
     color: colors.textSecondary,
+  },
+  description: {
+    fontSize: 14,
+    color: colors.textSecondary,
+    marginTop: 4,
   },
   deadline: {
     fontSize: 13,
