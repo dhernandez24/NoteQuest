@@ -75,7 +75,7 @@ export const CalendarScreen: React.FC = () => {
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.navigate('HomeScreen')}
+        <TouchableOpacity onPress={() => navigation.navigate('Home')}
                   style={styles.backButton} >
                     <Text style={styles.backButtonText}>x</Text>
                   </TouchableOpacity>
