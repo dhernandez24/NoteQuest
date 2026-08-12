@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import {
   View,
   Text,
@@ -7,70 +7,33 @@ import {
   ScrollView,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { mockAssignments } from '../data/mockData';
+import { CalendarUtils } from 'react-native-calendars';
 import { colors } from '../utils/colors';
-import { Assignment } from '../types';
-import { useNavigation, useRoute } from '@react-navigation/native'; 
+import { useAssignmentsStore } from '../store/AssignmentsStore';
+import { useNavigation } from '@react-navigation/native';
+import { AssignmentCalendar } from '../components';
+
 export const CalendarScreen: React.FC = () => {
-  const [currentDate, setCurrentDate] = useState(new Date());
+  const navigation = useNavigation() as any;
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
-   const navigation = useNavigation() as any;
-  const getDaysInMonth = (date: Date) => {
-    const year = date.getFullYear();
-    const month = date.getMonth();
-    const firstDay = new Date(year, month, 1);
-    const lastDay = new Date(year, month + 1, 0);
-    const daysInMonth = lastDay.getDate();
-    const startingDay = firstDay.getDay();
 
-    const days: (number | null)[] = [];
-    for (let i = 0; i < startingDay; i++) {
-      days.push(null);
-    }
-    for (let i = 1; i <= daysInMonth; i++) {
-      days.push(i);
-    }
-    return days;
+  const { assignments, loadAssignments } = useAssignmentsStore();
+
+  useEffect(() => {
+    loadAssignments();
+  }, [loadAssignments]);
+
+  const handleDayPress = (dateString: string) => {
+    setSelectedDate(new Date(`${dateString}T00:00:00`));
   };
 
-  const getAssignmentsForDate = (day: number): Assignment[] => {
-    return mockAssignments.filter((a) => {
-      const assignmentDate = a.deadline;
-      return (
-        assignmentDate.getDate() === day &&
-        assignmentDate.getMonth() === currentDate.getMonth() &&
-        assignmentDate.getFullYear() === currentDate.getFullYear()
-      );
+  const selectedDayAssignments = useMemo(() => {
+    if (!selectedDate) return [];
+    const dateStr = CalendarUtils.getCalendarDateString(selectedDate);
+    return assignments.filter((a) => {
+      return a.status === 'pending' && CalendarUtils.getCalendarDateString(a.deadline) === dateStr;
     });
-  };
-
-  const hasAssignments = (day: number): boolean => {
-    return getAssignmentsForDate(day).length > 0;
-  };
-
-  const monthNames = [
-    'January', 'February', 'March', 'April', 'May', 'June',
-    'July', 'August', 'September', 'October', 'November', 'December',
-  ];
-
-  const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-
-  const days = getDaysInMonth(currentDate);
-
-  const goToPrevMonth = () => {
-    setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() - 1));
-  };
-
-  const goToNextMonth = () => {
-    setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() + 1));
-  };
-
-  const handleDayPress = (day: number) => {
-    const date = new Date(currentDate.getFullYear(), currentDate.getMonth(), day);
-    setSelectedDate(date);
-  };
-
-  const selectedDayAssignments = selectedDate ? getAssignmentsForDate(selectedDate.getDate()) : [];
+  }, [assignments, selectedDate]);
 
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
@@ -82,74 +45,11 @@ export const CalendarScreen: React.FC = () => {
                 
       </View>
 
-      <View style={styles.calendarContainer}>
-        <View style={styles.monthHeader}>
-          <TouchableOpacity onPress={goToPrevMonth} style={styles.navButton}>
-            <Text style={styles.navButtonText}> ‹ </Text>
-          </TouchableOpacity>
-          <Text style={styles.monthTitle}>
-            {monthNames[currentDate.getMonth()]} {currentDate.getFullYear()}
-          </Text>
-          <TouchableOpacity onPress={goToNextMonth} style={styles.navButton}>
-            <Text style={styles.navButtonText}>›</Text>
-          </TouchableOpacity>
-        </View>
-
-        <View style={styles.weekDays}>
-          {dayNames.map((day) => (
-            <View key={day} style={styles.weekDay}>
-              <Text style={styles.weekDayText}>{day}</Text>
-            </View>
-          ))}
-        </View>
-
-        <View style={styles.daysGrid}>
-          {days.map((day, index) => {
-            const isToday =
-              day === new Date().getDate() &&
-              currentDate.getMonth() === new Date().getMonth() &&
-              currentDate.getFullYear() === new Date().getFullYear();
-            const isSelected =
-              selectedDate &&
-              day === selectedDate.getDate() &&
-              currentDate.getMonth() === selectedDate.getMonth() &&
-              currentDate.getFullYear() === selectedDate.getFullYear();
-            const hasDots = day && hasAssignments(day);
-
-            return (
-              <TouchableOpacity
-                key={index}
-                style={[
-                  styles.dayCell,
-                  isToday && styles.todayCell,
-                  isSelected && styles.selectedCell,
-                ]}
-                onPress={() => day && handleDayPress(day)}
-                disabled={!day}
-              >
-                {day && (
-                  <>
-                    <Text
-                      style={[
-                        styles.dayText,
-                        isToday && styles.todayText,
-                        isSelected && styles.selectedText,
-                      ]}
-                    >
-                      {day}
-                    </Text>
-                    {hasDots && (
-                      <View style={styles.dotsContainer}>
-                        <View style={styles.dot} />
-                      </View>
-                    )}
-                  </>
-                )}
-              </TouchableOpacity>
-            );
-          })}
-        </View>
-      </View>
+      <AssignmentCalendar
+        assignments={assignments.filter((a) => a.status === 'pending')}
+        selectedDate={selectedDate}
+        onDayPress={handleDayPress}
+      />
 
       {selectedDate && (
         <View style={styles.assignmentsContainer}>
@@ -201,29 +101,6 @@ const styles = StyleSheet.create({
     padding: 20,
     paddingBottom: 50,
   },
-  title: {
-    fontSize: 28,
-    fontWeight: '700',
-    color: colors.text,
-  },
-  calendarContainer: {
-    backgroundColor: colors.surface,
-    margin: 20,
-    marginTop: 8,
-    borderRadius: 20,
-    padding: 16,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.05,
-    shadowRadius: 8,
-    elevation: 2,
-  },
-  monthHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 16,
-  },
 
 backButton: {
   position: 'absolute',
@@ -253,84 +130,11 @@ backButtonText: {
   
 },
 
-
-  navButton: {
-    width: 36,
-    height: 36,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: colors.background,
-    borderRadius: 18,
-  },
-  navButtonText: {
-    fontSize: 24,
-    color: colors.text,
-    fontWeight: '300',
-  },
-  monthTitle: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: colors.text,
-  },
-  weekDays: {
-    flexDirection: 'row',
-    marginBottom: 8,
-  },
-  weekDay: {
-    flex: 1,
-    alignItems: 'center',
-    paddingVertical: 8,
-  },
-  weekDayText: {
-    fontSize: 12,
-    fontWeight: '500',
-    color: colors.textSecondary,
-  },
-  daysGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-  },
-  dayCell: {
-    width: '14.28%',
-    aspectRatio: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  todayCell: {
-    backgroundColor: colors.primary + '15',
-    borderRadius: 20,
-  },
-  selectedCell: {
-    backgroundColor: colors.primary,
-    borderRadius: 20,
-  },
-  dayText: {
-    fontSize: 15,
-    fontWeight: '500',
-    color: colors.text,
-  },
-  todayText: {
-    color: colors.primary,
-    fontWeight: '600',
-  },
-  selectedText: {
-    color: colors.surface,
-  },
-  dotsContainer: {
-    position: 'absolute',
-    bottom: 4,
-  },
-  dot: {
-    width: 5,
-    height: 5,
-    borderRadius: 3,
-    backgroundColor: colors.primary,
-  },
   assignmentsContainer: {
     flex: 1,
     backgroundColor: colors.surface,
     margin: 20,
-    marginTop: 0,
+    marginTop: 4,
     borderRadius: 20,
     padding: 20,
     shadowColor: '#000',

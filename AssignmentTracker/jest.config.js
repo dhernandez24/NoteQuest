@@ -6,6 +6,6 @@ module.exports = {
   testMatch: ['**/__tests__/**/*.test.tsx'],
 
   transformIgnorePatterns: [
-    'node_modules/(?!(jest-)?react-native|@react-native|expo|@expo|@react-navigation|zustand|@react-native-async-storage|react-native-safe-area-context)',
+    'node_modules/(?!(jest-)?react-native|@react-native|expo|@expo|@react-navigation|zustand|@react-native-async-storage|react-native-safe-area-context|react-native-calendars)',
   ],
 };
