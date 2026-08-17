@@ -24,7 +24,7 @@ export const CalendarScreen: React.FC = () => {
   }, [loadAssignments]);
 
   const handleDayPress = (dateString: string) => {
-    setSelectedDate(new Date(`${dateString}T00:00:00`));
+    setSelectedDiate(new Date(`${dateString}T00:00:00`));
   };
 
   const selectedDayAssignments = useMemo(() => {

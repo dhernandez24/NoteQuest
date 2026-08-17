@@ -39,13 +39,10 @@ export const AssignmentCalendar: React.FC<AssignmentCalendarProps> = ({
 }) => {
   const [viewMode, setViewMode] = useState<ViewMode>('month');
   const [isExpanded, setIsExpanded] = useState(true);
-  const [calendarKey, setCalendarKey] = useState(0);
+  
   const calendarRef = useRef<any>(null);
 
-  useEffect(() => {
-    const timer = setTimeout(() => setCalendarKey((k) => k + 1), 0);
-    return () => clearTimeout(timer);
-  }, []);
+  
 
   const initialDate = useMemo(() => CalendarUtils.getCalendarDateString(new Date()), []);
 
@@ -106,16 +103,12 @@ export const AssignmentCalendar: React.FC<AssignmentCalendarProps> = ({
       <View style={styles.calendarCard}>
         <CalendarProvider date={initialDate} theme={calendarTheme}>
           <ExpandableCalendar
-            key={calendarKey}
+            
             ref={calendarRef}
-            markedDates={markedDates}
-            onDayPress={(date) => onDayPress(date.dateString)}
-            initialPosition={ExpandableCalendar.positions.OPEN}
-            allowShadow={false}
-            hideKnob
-            disablePan
-            theme={calendarTheme}
-            onCalendarToggled={handleCalendarToggled}
+      markedDates={markedDates}
+      onDayPress={(date) => onDayPress(date.dateString)}
+      initialPosition={ExpandableCalendar.positions.OPEN}
+      hideKnob
           />
         </CalendarProvider>
       </View>
@@ -157,11 +150,13 @@ const styles = StyleSheet.create({
   },
   calendarCard: {
     backgroundColor: colors.surface,
-    borderRadius: 20,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.05,
-    shadowRadius: 8,
-    elevation: 2,
+  borderRadius: 20,
+  minHeight: 350,
+
+  shadowColor: '#000',
+  shadowOffset: { width: 0, height: 2 },
+  shadowOpacity: 0.05,
+  shadowRadius: 8,
+  elevation: 2,
   },
 });
