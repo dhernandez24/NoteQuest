@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   View,
   Text,
@@ -23,9 +23,14 @@ export const CalendarScreen: React.FC = () => {
     loadAssignments();
   }, [loadAssignments]);
 
-  const handleDayPress = (dateString: string) => {
+  const pendingAssignments = useMemo(
+    () => assignments.filter((a) => a.status === 'pending'),
+    [assignments]
+  );
+
+  const handleDayPress = useCallback((dateString: string) => {
     setSelectedDate(new Date(`${dateString}T00:00:00`));
-  };
+  }, []);
 
   const selectedDayAssignments = useMemo(() => {
     if (!selectedDate) return [];
@@ -46,7 +51,7 @@ export const CalendarScreen: React.FC = () => {
       
 
       <AssignmentCalendar
-        assignments={assignments.filter((a) => a.status === 'pending')}
+        assignments={pendingAssignments}
         selectedDate={selectedDate}
         onDayPress={handleDayPress}
       />

@@ -41,8 +41,7 @@ export const AssignmentCalendar: React.FC<AssignmentCalendarProps> = ({
   const [isExpanded, setIsExpanded] = useState(true);
   
   const calendarRef = useRef<any>(null);
-
-  
+  const [calendarWidth, setCalendarWidth] = useState<number | undefined>(undefined);
 
   const initialDate = useMemo(() => CalendarUtils.getCalendarDateString(new Date()), []);
 
@@ -100,15 +99,23 @@ export const AssignmentCalendar: React.FC<AssignmentCalendarProps> = ({
         })}
       </View>
 
-      <View style={styles.calendarCard}>
+      <View
+        style={styles.calendarCardWrapper}
+        onLayout={(e) => {
+          const w = Math.round(e.nativeEvent.layout.width);
+          if (w > 0 && w !== calendarWidth) setCalendarWidth(w);
+        }}
+      >
+        <View style={styles.calendarCardBackground} pointerEvents="none" />
         <CalendarProvider date={initialDate} theme={calendarTheme}>
           <ExpandableCalendar
-            
             ref={calendarRef}
       markedDates={markedDates}
       onDayPress={(date) => onDayPress(date.dateString)}
       initialPosition={ExpandableCalendar.positions.OPEN}
       hideKnob
+      allowShadow={false}
+      calendarWidth={calendarWidth}
           />
         </CalendarProvider>
       </View>
@@ -151,18 +158,19 @@ const styles = StyleSheet.create({
     color: colors.surface,
     fontWeight: '600',
   },
-  calendarCard: {
+  calendarCardWrapper: {
   marginHorizontal: 10,
-    backgroundColor: colors.surface,
-  borderRadius: 20,
-  fontSize: 16,
-  padding: 10,
-  fontWeight: '500',
-  fontFamily: 'System',
-
-
+  position: 'relative',
   minHeight: 350,
-
+  },
+  calendarCardBackground: {
+  position: 'absolute',
+  top: 0,
+  left: 0,
+  right: 0,
+  bottom: 0,
+  backgroundColor: colors.surface,
+  borderRadius: 20,
   shadowColor: '#000',
   shadowOffset: { width: 0, height: 2 },
   shadowOpacity: 0.05,
