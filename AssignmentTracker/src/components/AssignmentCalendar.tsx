@@ -1,5 +1,5 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import React, { useCallback, useMemo, useRef, useState } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, Dimensions } from 'react-native';
 import { CalendarProvider, CalendarUtils, ExpandableCalendar } from 'react-native-calendars';
 import { Assignment } from '../types';
 import { colors } from '../utils/colors';
@@ -41,7 +41,9 @@ export const AssignmentCalendar: React.FC<AssignmentCalendarProps> = ({
   const [isExpanded, setIsExpanded] = useState(true);
   
   const calendarRef = useRef<any>(null);
-  const [calendarWidth, setCalendarWidth] = useState<number | undefined>(undefined);
+  const [calendarWidth, setCalendarWidth] = useState<number>(
+    () => Dimensions.get('window').width - 60
+  );
 
   const initialDate = useMemo(() => CalendarUtils.getCalendarDateString(new Date()), []);
 
@@ -66,18 +68,28 @@ export const AssignmentCalendar: React.FC<AssignmentCalendarProps> = ({
     return marked;
   }, [assignments, selectedDate]);
 
-  const handleToggleView = (mode: ViewMode) => {
-    setViewMode(mode);
+  const handleToggleView = useCallback((mode: ViewMode) => {
     const shouldExpand = mode === 'month';
-    if (calendarRef.current && shouldExpand !== isExpanded) {
+    if (shouldExpand === isExpanded) return;
+    setViewMode(mode);
+    if (calendarRef.current) {
       calendarRef.current.toggleCalendarPosition();
     }
-  };
+  }, [isExpanded]);
 
-  const handleCalendarToggled = (open: boolean) => {
+  const handleCalendarToggled = useCallback((open: boolean) => {
     setIsExpanded(open);
     setViewMode(open ? 'month' : 'week');
-  };
+  }, []);
+
+  const handleLayout = useCallback((e: { nativeEvent: { layout: { width: number } } }) => {
+    const w = Math.round(e.nativeEvent.layout.width);
+    setCalendarWidth((prev) => (w > 0 && prev !== undefined && Math.abs(w - prev) < 2 ? prev : w > 0 ? w : prev));
+  }, []);
+
+  const handleDayPressInternal = useCallback((date: { dateString: string }) => {
+    onDayPress(date.dateString);
+  }, [onDayPress]);
 
   return (
     <View style={styles.container}>
@@ -101,21 +113,22 @@ export const AssignmentCalendar: React.FC<AssignmentCalendarProps> = ({
 
       <View
         style={styles.calendarCardWrapper}
-        onLayout={(e) => {
-          const w = Math.round(e.nativeEvent.layout.width);
-          if (w > 0 && w !== calendarWidth) setCalendarWidth(w);
-        }}
+        onLayout={handleLayout}
       >
         <View style={styles.calendarCardBackground} pointerEvents="none" />
         <CalendarProvider date={initialDate} theme={calendarTheme}>
           <ExpandableCalendar
             ref={calendarRef}
       markedDates={markedDates}
-      onDayPress={(date) => onDayPress(date.dateString)}
+      onDayPress={handleDayPressInternal}
+      onCalendarToggled={handleCalendarToggled}
       initialPosition={ExpandableCalendar.positions.OPEN}
       hideKnob
       allowShadow={false}
+      closeOnDayPress={false}
       calendarWidth={calendarWidth}
+      pastScrollRange={6}
+      futureScrollRange={12}
           />
         </CalendarProvider>
       </View>
