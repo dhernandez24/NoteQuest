@@ -76,8 +76,11 @@ export const CalendarScreen: React.FC = () => {
         selectedDate={selectedDate}
         onDayPress={handleDayPress}
       />
-<View style={styles.upcomingContainer}>
-  <Text style={styles.upcomingTitle}>This Week</Text>
+
+      <View style={styles.upcomingContainer}>
+<View style={styles.sectionTitle}>
+  <Text style={styles.sectionTitleText} >Due this '''</Text>
+</View>
 
   {upcomingAssignments.length === 0 ? (
     <Text style={styles.noAssignments}>
@@ -266,12 +269,39 @@ backButtonText: {
   padding: 20,
 },
 
+sectionTitle: {
+    backgroundColor: colors.primary,
+    paddingVertical: 8,
+   
+    borderRadius: 16,
+   
+
+    shadowColor: '#000',
+    shadowOffset: {
+    width: 0,
+    height: 6,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 10,
+    elevation: 8,
+
+},
+sectionTitleText: {
+    fontSize: 17,
+    fontWeight: '500',
+    color: 'white',
+   alignSelf: 'center',
+
+  },
 upcomingTitle: {
   fontSize: 18,
   fontWeight: '600',
   color: colors.text,
   marginBottom: 12,
 },
+
+
+
 
 upcomingItem: {
   flexDirection: 'row',
