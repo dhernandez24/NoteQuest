@@ -31,6 +31,27 @@ export const CalendarScreen: React.FC = () => {
   const handleDayPress = useCallback((dateString: string) => {
     setSelectedDate(new Date(`${dateString}T00:00:00`));
   }, []);
+  const upcomingAssignments = useMemo(() => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const endDate = new Date(today);
+    endDate.setDate(today.getDate() + 7);
+
+    return assignments
+      .filter((a) => {
+        if (a.status !== 'pending') return false;
+
+        const deadline = new Date(a.deadline);
+
+        return deadline >= today && deadline <= endDate;
+      })
+      .sort(
+        (a, b) =>
+          new Date(a.deadline).getTime() -
+          new Date(b.deadline).getTime()
+      );
+  }, [assignments]);
 
   const selectedDayAssignments = useMemo(() => {
     if (!selectedDate) return [];
@@ -55,6 +76,55 @@ export const CalendarScreen: React.FC = () => {
         selectedDate={selectedDate}
         onDayPress={handleDayPress}
       />
+<View style={styles.upcomingContainer}>
+  <Text style={styles.upcomingTitle}>This Week</Text>
+
+  {upcomingAssignments.length === 0 ? (
+    <Text style={styles.noAssignments}>
+      Nothing due this week 
+    </Text>
+  ) : (
+    upcomingAssignments.map((assignment) => (
+      <View
+        key={assignment.id}
+        style={styles.upcomingItem}
+      >
+        <View
+          style={[
+            styles.typeIndicator,
+            { backgroundColor: colors.primary },
+          ]}
+        />
+
+        <View style={styles.assignmentInfo}>
+          <Text style={styles.assignmentTitle}>
+            {assignment.title}
+          </Text>
+
+          <Text style={styles.assignmentTime}>
+            {new Date(assignment.deadline).toLocaleDateString(
+              'en-US',
+              {
+                weekday: 'short',
+                month: 'short',
+                day: 'numeric',
+              }
+            )}
+            {' • '}
+            {new Date(assignment.deadline).toLocaleTimeString(
+              'en-US',
+              {
+                hour: 'numeric',
+                minute: '2-digit',
+              }
+            )}
+          </Text>
+        </View>
+      </View>
+    ))
+  )}
+</View>
+
 </View>
       {selectedDate && (
         <View style={styles.assignmentsContainer}>
@@ -189,4 +259,26 @@ backButtonText: {
     color: colors.textSecondary,
     marginTop: 2,
   },
+  upcomingContainer: {
+  marginTop: 10,
+  backgroundColor: colors.surface,
+  borderRadius: 20,
+  padding: 20,
+},
+
+upcomingTitle: {
+  fontSize: 18,
+  fontWeight: '600',
+  color: colors.text,
+  marginBottom: 12,
+},
+
+upcomingItem: {
+  flexDirection: 'row',
+  alignItems: 'center',
+  backgroundColor: colors.background,
+  borderRadius: 12,
+  padding: 12,
+  marginBottom: 8,
+},
 });
