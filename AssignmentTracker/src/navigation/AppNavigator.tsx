@@ -21,7 +21,8 @@ const TabIcon: React.FC<{
       style={[
         { width: 70, height: 70, tintColor: focused ? colors.primary : colors.textSecondary }
       ]}
-      resizeMode="contain"
+      resizeMode="contain" 
+      
     />
     <Text
   numberOfLines={1}

@@ -18,7 +18,11 @@ export const CalendarScreen: React.FC = () => {
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
 
   const { assignments, loadAssignments } = useAssignmentsStore();
-
+  const [showMonthAssignments, setShowMonthAssignments] = useState(false);
+const currentMonth = new Date().toLocaleDateString('en-US', {
+  month: 'long',
+});
+  
   useEffect(() => {
     loadAssignments();
   }, [loadAssignments]);
@@ -77,55 +81,61 @@ export const CalendarScreen: React.FC = () => {
         onDayPress={handleDayPress}
       />
 
-      <View style={styles.upcomingContainer}>
-<View style={styles.sectionTitle}>
-  <Text style={styles.sectionTitleText} >Due this '''</Text>
+      
+
+
+
+
+
+  <View style={styles.upcomingContainer}>
+<View style={styles.sectionTitle}>  
+
+<TouchableOpacity
+  onPress={() => setShowMonthAssignments(!showMonthAssignments)}
+>
+  <Text style={styles.sectionTitleText}>
+    {showMonthAssignments
+      ? `▲ Due in ${currentMonth} ▲`
+      : '▼ Due this month ▼'}
+  </Text>
+</TouchableOpacity>
 </View>
+{showMonthAssignments && (
+  <>
+    {upcomingAssignments.length === 0 ? (
+      <Text style={styles.noAssignments}>
+        Nothing due this month
+      </Text>
+    ) : (
+      upcomingAssignments.map((assignment) => (
+        <View key={assignment.id} style={styles.assignmentItem}>
+                  <View
+                    style={[
+                      styles.typeIndicator,
+                      { backgroundColor: colors.primary },
+                    ]}
+                  />
 
-  {upcomingAssignments.length === 0 ? (
-    <Text style={styles.noAssignments}>
-      Nothing due this week 
-    </Text>
-  ) : (
-    upcomingAssignments.map((assignment) => (
-      <View
-        key={assignment.id}
-        style={styles.upcomingItem}
-      >
-        <View
-          style={[
-            styles.typeIndicator,
-            { backgroundColor: colors.primary },
-          ]}
-        />
+                  <View style={styles.assignmentInfo}>
 
-        <View style={styles.assignmentInfo}>
-          <Text style={styles.assignmentTitle}>
-            {assignment.title}
-          </Text>
+                    <Text style={styles.assignmentTitle}>{assignment.title}</Text>
+                    <Text style={styles.assignmentTime}>
+                      Due at{' '}
+                      {assignment.deadline.toLocaleTimeString('en-US', {
+                        hour: 'numeric',
+                        minute: '2-digit',
+                      })}
+                    </Text>
+                  </View>
+                </View>
+      ))
+    )}
+  </>
+)}
 
-          <Text style={styles.assignmentTime}>
-            {new Date(assignment.deadline).toLocaleDateString(
-              'en-US',
-              {
-                weekday: 'short',
-                month: 'short',
-                day: 'numeric',
-              }
-            )}
-            {' • '}
-            {new Date(assignment.deadline).toLocaleTimeString(
-              'en-US',
-              {
-                hour: 'numeric',
-                minute: '2-digit',
-              }
-            )}
-          </Text>
-        </View>
-      </View>
-    ))
-  )}
+  
+
+
 </View>
 
 </View>
@@ -150,7 +160,9 @@ export const CalendarScreen: React.FC = () => {
                       { backgroundColor: colors.primary },
                     ]}
                   />
+
                   <View style={styles.assignmentInfo}>
+
                     <Text style={styles.assignmentTitle}>{assignment.title}</Text>
                     <Text style={styles.assignmentTime}>
                       Due at{' '}
@@ -186,7 +198,7 @@ backButton: {
       left: 25,
       paddingHorizontal: 15,
       paddingVertical: 5,
-  backgroundColor: colors.primary,
+  backgroundColor: colors.task,
   borderRadius: 99999,
 
   shadowColor: '#000',
@@ -203,7 +215,7 @@ backButton: {
 
 backButtonText: {
   fontSize: 30,
-  color: 'white',
+  color: colors.white,
  
 
   
@@ -211,7 +223,7 @@ backButtonText: {
 
   assignmentsContainer: {
     flex: 1,
-    backgroundColor: colors.surface,
+    backgroundColor: '#FFFFFF',
     margin: 20,
     marginTop: 4,
     borderRadius: 20,
@@ -237,7 +249,7 @@ backButtonText: {
   assignmentItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: colors.background,
+backgroundColor: '#FFFFFF',
     borderRadius: 12,
     padding: 12,
     marginBottom: 8,
@@ -264,17 +276,17 @@ backButtonText: {
   },
   upcomingContainer: {
   marginTop: 10,
-  backgroundColor: colors.surface,
+
   borderRadius: 20,
   padding: 20,
 },
 
 sectionTitle: {
-    backgroundColor: colors.primary,
+    backgroundColor: colors.task,
     paddingVertical: 8,
    
     borderRadius: 16,
-   
+    marginBottom: 12,
 
     shadowColor: '#000',
     shadowOffset: {
