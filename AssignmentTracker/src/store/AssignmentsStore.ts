@@ -8,6 +8,7 @@ interface AssignmentsState {
   addAssignment: (assignment: Omit<Assignment, 'id' | 'status' | 'coinReward' | 'createdAt' | 'completedAt'>) => Promise<void>;
   updateAssignment: (assignment: Assignment) => Promise<void>;
   completeAssignment: (id: string) => Promise<void>;
+  restoreAssignment: (id: string) => Promise<void>;
   deleteAssignment: (id: string) => Promise<void>;
 }
 
@@ -17,7 +18,51 @@ interface AssignmentsStore extends AssignmentsState {
 
 const STORAGE_KEY = '@assignments';
 
+// Auto-prune completed assignments: keep only the most recent COMPLETED_LIMIT.
+// Gated off by default (like SHOW_REWARDS) so the behavior is opt-in.
+const AUTO_PRUNE_COMPLETED = false;
+const COMPLETED_LIMIT = 25;
+
 const generateId = (): string => Math.random().toString(36).substring(2, 15);
+
+const completedTime = (assignment: Assignment): number => {
+  const time = (assignment.completedAt ?? assignment.createdAt).getTime();
+  return isNaN(time) ? 0 : time;
+};
+
+// Drop the oldest completed assignments beyond COMPLETED_LIMIT. Pending items are untouched.
+export const pruneCompletedAssignments = (
+  assignments: Assignment[]
+): { assignments: Assignment[]; removed: number } => {
+  const completed = assignments.filter((a) => a.status === 'completed');
+  if (completed.length <= COMPLETED_LIMIT) {
+    return { assignments, removed: 0 };
+  }
+
+  const keepIds = new Set(
+    [...completed]
+      .sort((a, b) => completedTime(b) - completedTime(a))
+      .slice(0, COMPLETED_LIMIT)
+      .map((a) => a.id)
+  );
+  const next = assignments.filter((a) => a.status !== 'completed' || keepIds.has(a.id));
+  return { assignments: next, removed: assignments.length - next.length };
+};
+
+// Convert raw storage data to valid assignments; returns null for malformed items.
+const hydrateAssignment = (raw: any): Assignment | null => {
+  if (!raw || typeof raw !== 'object' || typeof raw.id !== 'string' || typeof raw.title !== 'string') {
+    return null;
+  }
+  const deadline = new Date(raw.deadline);
+  const createdAt = new Date(raw.createdAt);
+  if (isNaN(deadline.getTime()) || isNaN(createdAt.getTime())) {
+    return null;
+  }
+  const completedAt = raw.completedAt ? new Date(raw.completedAt) : undefined;
+  const validCompletedAt = completedAt && !isNaN(completedAt.getTime()) ? completedAt : undefined;
+  return { ...raw, deadline, createdAt, completedAt: validCompletedAt };
+};
 
 const calculateCoinReward = (type: AssignmentType, duration: number): number => {
   let base = 5;
@@ -35,12 +80,23 @@ export const useAssignmentsStore = create<AssignmentsStore>((set, get) => ({
       const stored = await AsyncStorage.getItem(STORAGE_KEY);
       if (stored) {
         const parsed = JSON.parse(stored);
-        const assignments: Assignment[] = parsed.map((a: any) => ({
-          ...a,
-          deadline: new Date(a.deadline),
-          createdAt: new Date(a.createdAt),
-          completedAt: a.completedAt ? new Date(a.completedAt) : undefined,
-        }));
+        if (!Array.isArray(parsed)) {
+          set({ assignments: [] });
+          return;
+        }
+        let assignments = parsed
+          .map(hydrateAssignment)
+          .filter((a): a is Assignment => a !== null);
+
+        // Only prune when the feature flag is enabled; persist if anything was removed.
+        if (AUTO_PRUNE_COMPLETED) {
+          const pruned = pruneCompletedAssignments(assignments);
+          if (pruned.removed > 0) {
+            assignments = pruned.assignments;
+            await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(assignments));
+          }
+        }
+
         set({ assignments });
       }
     } catch (error) {
@@ -98,6 +154,22 @@ export const useAssignmentsStore = create<AssignmentsStore>((set, get) => ({
       await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(assignments));
     } catch (error) {
       console.error('Failed to complete assignment:', error);
+    }
+  },
+
+  // Undo: move a completed assignment back to pending and clear completedAt.
+  restoreAssignment: async (id: string) => {
+    const assignments = get().assignments.map((a: Assignment) =>
+      a.id === id && a.status === 'completed'
+        ? { ...a, status: 'pending' as const, completedAt: undefined }
+        : a
+    );
+    set({ assignments });
+
+    try {
+      await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(assignments));
+    } catch (error) {
+      console.error('Failed to restore assignment:', error);
     }
   },
 

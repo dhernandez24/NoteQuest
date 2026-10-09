@@ -1,4 +1,5 @@
-import { useAssignmentsStore } from '../../store/AssignmentsStore';
+import { useAssignmentsStore, pruneCompletedAssignments } from '../../store/AssignmentsStore';
+import { Assignment } from '../../types';
 
 const baseAssignment = {
   title: 'Math Homework',
@@ -7,6 +8,21 @@ const baseAssignment = {
   deadline: new Date('2026-07-15'),
   description: 'Chapter 5 problems',
 };
+
+function makeAssignment(overrides: Partial<Assignment> = {}): Assignment {
+  return {
+    id: 'id',
+    title: 'Test',
+    type: 'homework',
+    duration: 60,
+    deadline: new Date('2026-07-15'),
+    description: '',
+    status: 'pending',
+    coinReward: 5,
+    createdAt: new Date('2026-07-01'),
+    ...overrides,
+  };
+}
 
 describe('AssignmentsStore', () => {
   beforeEach(() => {
@@ -102,5 +118,82 @@ describe('AssignmentsStore', () => {
     await useAssignmentsStore.getState().deleteAssignment(id);
 
     expect(useAssignmentsStore.getState().assignments).toHaveLength(0);
+  });
+
+  describe('restoreAssignment', () => {
+    it('returns a completed assignment to pending and clears completedAt', async () => {
+      await useAssignmentsStore.getState().addAssignment(baseAssignment);
+      const { id } = useAssignmentsStore.getState().assignments[0];
+      await useAssignmentsStore.getState().completeAssignment(id);
+
+      await useAssignmentsStore.getState().restoreAssignment(id);
+      const { assignments } = useAssignmentsStore.getState();
+
+      expect(assignments[0].status).toBe('pending');
+      expect(assignments[0].completedAt).toBeUndefined();
+    });
+
+    it('is safe to restore an assignment that is already pending', async () => {
+      await useAssignmentsStore.getState().addAssignment(baseAssignment);
+      const { id } = useAssignmentsStore.getState().assignments[0];
+
+      await useAssignmentsStore.getState().restoreAssignment(id);
+      const { assignments } = useAssignmentsStore.getState();
+
+      expect(assignments[0].status).toBe('pending');
+    });
+  });
+
+  describe('pruneCompletedAssignments', () => {
+    it('keeps only the 25 most recent completed assignments', () => {
+      const completed = Array.from({ length: 30 }, (_, i) =>
+        makeAssignment({
+          id: `c${i}`,
+          status: 'completed',
+          completedAt: new Date(2026, 0, i + 1),
+        })
+      );
+
+      const { assignments, removed } = pruneCompletedAssignments(completed);
+      const kept = assignments.filter((a) => a.status === 'completed');
+
+      expect(kept).toHaveLength(25);
+      expect(removed).toBe(5);
+      expect(assignments.some((a) => a.id === 'c29')).toBe(true);
+      expect(assignments.some((a) => a.id === 'c0')).toBe(false);
+    });
+
+    it('leaves pending assignments untouched', () => {
+      const items = [
+        makeAssignment({ id: 'p1' }),
+        ...Array.from({ length: 30 }, (_, i) =>
+          makeAssignment({
+            id: `c${i}`,
+            status: 'completed',
+            completedAt: new Date(2026, 0, i + 1),
+          })
+        ),
+      ];
+
+      const { assignments } = pruneCompletedAssignments(items);
+
+      expect(assignments.filter((a) => a.status === 'pending')).toHaveLength(1);
+      expect(assignments.filter((a) => a.status === 'completed')).toHaveLength(25);
+    });
+
+    it('treats an invalid completedAt as oldest without crashing', () => {
+      const items = Array.from({ length: 27 }, (_, i) =>
+        makeAssignment({
+          id: `c${i}`,
+          status: 'completed',
+          completedAt: i === 0 ? new Date('not-a-date') : new Date(2026, 0, i + 1),
+        })
+      );
+
+      const { assignments, removed } = pruneCompletedAssignments(items);
+
+      expect(removed).toBe(2);
+      expect(assignments.some((a) => a.id === 'c0')).toBe(false);
+    });
   });
 });

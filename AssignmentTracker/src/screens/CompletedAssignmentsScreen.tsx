@@ -16,7 +16,7 @@ import { useNavigation } from '@react-navigation/native';
 
 export const CompletedAssignmentsScreen: React.FC = () => {
   const navigation = useNavigation() as any;
-  const { assignments, loadAssignments, deleteAssignment } = useAssignmentsStore();
+  const { assignments, loadAssignments, deleteAssignment, restoreAssignment } = useAssignmentsStore();
 
   useEffect(() => {
     loadAssignments();
@@ -64,12 +64,21 @@ export const CompletedAssignmentsScreen: React.FC = () => {
               <Text style={styles.cardMeta}>
                 Completed {assignment.completedAt ? formatFullDate(assignment.completedAt) : ''}
               </Text>
-              <TouchableOpacity
-                style={styles.deleteButton}
-                onPress={() => handleDelete(assignment.id, assignment.title)}
-              >
-                <Text style={styles.deleteText}>Remove</Text>
-              </TouchableOpacity>
+              <View style={styles.actionsRow}>
+                {/* Undo sends the assignment back to pending */}
+                <TouchableOpacity
+                  style={styles.undoButton}
+                  onPress={() => restoreAssignment(assignment.id)}
+                >
+                  <Text style={styles.undoText}>Undo</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={styles.deleteButton}
+                  onPress={() => handleDelete(assignment.id, assignment.title)}
+                >
+                  <Text style={styles.deleteText}>Remove</Text>
+                </TouchableOpacity>
+              </View>
             </View>
           ))
         )}
@@ -158,6 +167,23 @@ const styles = StyleSheet.create({
     fontSize: 13,
     color: colors.textSecondary,
     marginBottom: 12,
+  },
+  actionsRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  undoButton: {
+    alignSelf: 'flex-start',
+    paddingVertical: 6,
+    paddingHorizontal: 14,
+    borderRadius: 8,
+    backgroundColor: colors.primaryLight,
+    marginRight: 8,
+  },
+  undoText: {
+    color: colors.text,
+    fontSize: 13,
+    fontWeight: '500',
   },
   deleteButton: {
     alignSelf: 'flex-start',
