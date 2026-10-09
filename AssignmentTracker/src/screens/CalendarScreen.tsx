@@ -74,7 +74,7 @@ const currentMonth = new Date().toLocaleDateString('en-US', {
                   </TouchableOpacity>
                 
       
-
+<View style={styles.calendarContainer}>
       <AssignmentCalendar
         assignments={pendingAssignments}
         selectedDate={selectedDate}
@@ -82,12 +82,13 @@ const currentMonth = new Date().toLocaleDateString('en-US', {
       />
 
       
-
+</View>
 
 
 
 
   <View style={styles.upcomingContainer}>
+
 <View style={styles.sectionTitle}>  
 
 <TouchableOpacity
@@ -192,6 +193,9 @@ const styles = StyleSheet.create({
     paddingBottom: 50,
     
   },
+  calendarContainer: {
+    marginTop: 40,
+  },
 
 backButton: {
   position: 'absolute',
@@ -276,6 +280,7 @@ backgroundColor: '#FFFFFF',
   },
   upcomingContainer: {
   marginTop: 10,
+  marginHorizontal: 20,
 
   borderRadius: 20,
   padding: 20,
@@ -296,7 +301,7 @@ sectionTitle: {
     shadowOpacity: 0.25,
     shadowRadius: 10,
     elevation: 8,
-
+    marginHorizontal: 20,
 },
 sectionTitleText: {
     fontSize: 17,

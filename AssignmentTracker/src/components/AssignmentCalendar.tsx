@@ -6,6 +6,9 @@ import { colors } from '../utils/colors';
 
 type ViewMode = 'month' | 'week';
 
+// Feature flag: gates the week/month switch. Off = month-only, functionality kept for later.
+const SHOW_WEEK_MONTH_TOGGLE = false;
+
 interface AssignmentCalendarProps {
   assignments: Assignment[];
   selectedDate?: Date | null;
@@ -78,6 +81,7 @@ export const AssignmentCalendar: React.FC<AssignmentCalendarProps> = ({
   }, [isExpanded]);
 
   const handleCalendarToggled = useCallback((open: boolean) => {
+    if (!SHOW_WEEK_MONTH_TOGGLE) return;
     setIsExpanded(open);
     setViewMode(open ? 'month' : 'week');
   }, []);
@@ -93,6 +97,7 @@ export const AssignmentCalendar: React.FC<AssignmentCalendarProps> = ({
 
   return (
     <View style={styles.container}>
+      {SHOW_WEEK_MONTH_TOGGLE && (
       <View style={styles.segmentedControl}>
         {(['week', 'month'] as ViewMode[]).map((mode) => {
           const active = viewMode === mode;
@@ -110,6 +115,7 @@ export const AssignmentCalendar: React.FC<AssignmentCalendarProps> = ({
           );
         })}
       </View>
+      )}
 
       <View
         style={styles.calendarCardWrapper}
@@ -124,6 +130,7 @@ export const AssignmentCalendar: React.FC<AssignmentCalendarProps> = ({
       onCalendarToggled={handleCalendarToggled}
       initialPosition={ExpandableCalendar.positions.OPEN}
       hideKnob
+      disablePan={!SHOW_WEEK_MONTH_TOGGLE}
       allowShadow={false}
       closeOnDayPress={false}
       calendarWidth={calendarWidth}
