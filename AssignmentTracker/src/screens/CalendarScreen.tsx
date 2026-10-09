@@ -36,11 +36,10 @@ const currentMonth = new Date().toLocaleDateString('en-US', {
     setSelectedDate(new Date(`${dateString}T00:00:00`));
   }, []);
   const upcomingAssignments = useMemo(() => {
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-
-    const endDate = new Date(today);
-    endDate.setDate(today.getDate() + 7);
+    const now = new Date();
+    // Match the "Due this month" label: whole current calendar month, not a rolling 7-day window.
+    const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+    const nextMonthStart = new Date(now.getFullYear(), now.getMonth() + 1, 1);
 
     return assignments
       .filter((a) => {
@@ -48,7 +47,7 @@ const currentMonth = new Date().toLocaleDateString('en-US', {
 
         const deadline = new Date(a.deadline);
 
-        return deadline >= today && deadline <= endDate;
+        return deadline >= monthStart && deadline < nextMonthStart;
       })
       .sort(
         (a, b) =>
