@@ -12,12 +12,10 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { colors } from '../utils/colors';
 import { useAssignmentsStore } from '../store/AssignmentsStore';
-import { AssignmentType, Assignment } from '../types';
+import { AssignmentType, Assignment, ASSIGNMENT_TYPES } from '../types';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { DurationPicker } from '../components';
 import DateTimePicker from '@react-native-community/datetimepicker';
-
-const TYPE_OPTIONS: AssignmentType[] = ['homework', 'test', 'task', 'other'];
 
 
 
@@ -201,7 +199,7 @@ const [showTimePicker, setShowTimePicker] = useState(false);
         <View style={styles.card}>
           <Text style={styles.label}>Type of Assignment</Text>
           <View style={styles.typeList}>
-  {TYPE_OPTIONS.map((t) => (
+  {ASSIGNMENT_TYPES.map((t) => (
     <TouchableOpacity
       key={t}
       style={[
